@@ -1,0 +1,698 @@
+{% extends "base.html" %}
+
+{% block title %}Projects - AI Product Manager{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Header Section -->
+    <div class="page-header">
+        <div class="header-content">
+            <div class="header-title">
+                <h1 class="page-title">
+                    <i class="fas fa-folder icon"></i>
+                    Projects Dashboard
+                </h1>
+                <p class="page-subtitle">Manage and track your AI-powered project analyses</p>
+            </div>
+            <div class="header-actions">
+                <a href="{{ url_for('projects.new_project') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i>
+                    New Project
+                </a>
+                <a href="{{ url_for('main.analyze_page') }}" class="btn btn-secondary">
+                    <i class="fas fa-chart-line"></i>
+                    Quick Analysis
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Overview -->
+    {% if projects %}
+    <div class="stats-grid">
+        <div class="metric-card">
+            <div class="metric-content">
+                <div class="metric-details">
+                    <div class="metric-label">Total Projects</div>
+                    <div class="metric-value">{{ projects|length }}</div>
+                </div>
+                <div class="metric-icon">
+                    <i class="fas fa-folder" style="color: var(--primary-blue);"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="metric-card">
+            <div class="metric-content">
+                <div class="metric-details">
+                    <div class="metric-label">Completed</div>
+                    <div class="metric-value" style="color: var(--success-color);">{{ projects|selectattr('status', 'equalto', 'completed')|list|length }}</div>
+                </div>
+                <div class="metric-icon">
+                    <i class="fas fa-check-circle" style="color: var(--success-color);"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="metric-card">
+            <div class="metric-content">
+                <div class="metric-details">
+                    <div class="metric-label">In Progress</div>
+                    <div class="metric-value" style="color: var(--warning-color);">{{ projects|selectattr('status', 'equalto', 'analyzing')|list|length }}</div>
+                </div>
+                <div class="metric-icon">
+                    <i class="fas fa-spinner" style="color: var(--warning-color);"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="metric-card">
+            <div class="metric-content">
+                <div class="metric-details">
+                    <div class="metric-label">Pending</div>
+                    <div class="metric-value" style="color: var(--text-secondary);">{{ projects|selectattr('status', 'equalto', 'pending')|list|length }}</div>
+                </div>
+                <div class="metric-icon">
+                    <i class="fas fa-clock" style="color: var(--text-secondary);"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Search and Filter Bar -->
+    {% if projects %}
+    <div class="glass-card">
+        <div class="search-filter-container">
+            <div class="search-input-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="searchInput" placeholder="Search projects..." class="search-input">
+            </div>
+            <div class="filter-controls">
+                <select id="statusFilter" class="filter-select">
+                    <option value="">All Status</option>
+                    <option value="completed">Completed</option>
+                    <option value="analyzing">Analyzing</option>
+                    <option value="pending">Pending</option>
+                </select>
+                <select id="sortBy" class="filter-select">
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="title">Title A-Z</option>
+                    <option value="status">Status</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Projects Grid -->
+    {% if projects %}
+    <div id="projectsGrid" class="projects-grid">
+        {% for project in projects %}
+        <div class="project-card" 
+             data-title="{{ project.title|lower }}" 
+             data-status="{{ project.status }}" 
+             data-date="{{ project.created_at.timestamp() }}">
+            
+            <!-- Status Badge -->
+            <div class="status-badge status-{{ project.status }}">
+                {% if project.status == 'completed' %}
+                    <i class="fas fa-check-circle"></i>
+                    Complete
+                {% elif project.status == 'analyzing' %}
+                    <i class="fas fa-cog fa-spin"></i>
+                    Analyzing
+                {% else %}
+                    <i class="fas fa-clock"></i>
+                    Pending
+                {% endif %}
+            </div>
+                
+            <!-- Card Content -->
+            <div class="project-card-content">
+                <!-- Project Title -->
+                <div class="project-header">
+                    <h3 class="project-title">{{ project.title }}</h3>
+                    <p class="project-description">
+                        {{ project.description or "No description provided for this project." }}
+                    </p>
+                </div>
+                
+                <!-- Project Metadata -->
+                <div class="project-metadata">
+                    {% if project.timeline %}
+                    <div class="metadata-item">
+                        <div class="metadata-icon">
+                            <i class="fas fa-calendar-alt text-primary"></i>
+                        </div>
+                        <div class="metadata-content">
+                            <div class="metadata-label">Timeline</div>
+                            <div class="metadata-value">{{ project.timeline }}</div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if project.budget %}
+                    <div class="metadata-item">
+                        <div class="metadata-icon">
+                            <i class="fas fa-dollar-sign text-success"></i>
+                        </div>
+                        <div class="metadata-content">
+                            <div class="metadata-label">Budget</div>
+                            <div class="metadata-value">{{ project.budget }}</div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="metadata-item">
+                        <div class="metadata-icon">
+                            <i class="fas fa-plus-circle text-purple"></i>
+                        </div>
+                        <div class="metadata-content">
+                            <div class="metadata-label">Created</div>
+                            <div class="metadata-value">{{ project.created_at.strftime('%b %d, %Y') }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="metadata-item {% if project.has_analysis() %}metadata-success{% endif %}">
+                        <div class="metadata-icon">
+                            <i class="fas fa-chart-line {% if project.has_analysis() %}text-success{% else %}text-secondary{% endif %}"></i>
+                        </div>
+                        <div class="metadata-content">
+                            <div class="metadata-label">Analysis</div>
+                            <div class="metadata-value">{% if project.has_analysis() %}Available{% else %}Not Started{% endif %}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="project-actions">
+                    <a href="{{ url_for('projects.project_detail', project_id=project.id) }}" class="btn btn-primary btn-full">
+                        <i class="fas fa-eye"></i>
+                        View Details
+                    </a>
+                    {% if project.status == 'pending' %}
+                    <button onclick="analyzeProject({{ project.id }})" class="btn btn-secondary btn-full">
+                        <i class="fas fa-play"></i>
+                        Analyze
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+            </div>
+            {% endfor %}
+        </div>
+    
+    <!-- No Results Message -->
+    <div id="noResults" class="no-results" style="display: none;">
+        <div class="glass-card">
+            <div class="empty-state">
+                <i class="fas fa-search empty-icon"></i>
+                <h3 class="empty-title">No Projects Found</h3>
+                <p class="empty-description">Try adjusting your search or filter criteria.</p>
+            </div>
+        </div>
+    </div>
+    
+    {% else %}
+    <!-- Empty State -->
+    <div class="empty-state-container">
+        <div class="glass-card">
+            <div class="empty-state">
+                <div class="empty-icon-container">
+                    <i class="fas fa-rocket empty-icon"></i>
+                </div>
+                <h3 class="empty-title">Ready to Start Your First Project?</h3>
+                <p class="empty-description">
+                    Create comprehensive project analyses with our AI-powered team of experts. 
+                    Get insights from Product Managers, Developers, QA Engineers, and AI specialists.
+                </p>
+                <div class="empty-actions">
+                    <a href="{{ url_for('projects.new_project') }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i>
+                        Create Your First Project
+                    </a>
+                    <a href="{{ url_for('main.analyze_page') }}" class="btn btn-secondary">
+                        <i class="fas fa-chart-line"></i>
+                        Try Quick Analysis
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+/* Projects-specific styles using existing CSS framework */
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.project-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 0;
+    position: relative;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.project-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary-blue);
+}
+
+.status-badge {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    backdrop-filter: blur(10px);
+    border: 1px solid;
+    z-index: 2;
+}
+
+.status-completed {
+    background: rgba(34, 197, 94, 0.2);
+    color: var(--success-color);
+    border-color: var(--success-color);
+}
+
+.status-analyzing {
+    background: rgba(251, 191, 36, 0.2);
+    color: var(--warning-color);
+    border-color: var(--warning-color);
+}
+
+.status-pending {
+    background: rgba(107, 114, 128, 0.2);
+    color: var(--text-secondary);
+    border-color: var(--text-secondary);
+}
+
+.project-card-content {
+    padding: 2rem;
+    padding-top: 4rem;
+}
+
+.project-header {
+    margin-bottom: 1.5rem;
+}
+
+.project-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+    line-height: 1.3;
+    padding-right: 6rem;
+}
+
+.project-description {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    font-size: 0.9rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.project-metadata {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.metadata-item {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.metadata-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+    transform: translateY(-2px);
+}
+
+.metadata-success {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(59, 130, 246, 0.1));
+    border-color: var(--success-color);
+}
+
+.metadata-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.75rem;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.metadata-content {
+    flex: 1;
+}
+
+.metadata-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+}
+
+.metadata-value {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+}
+
+.project-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn-full {
+    flex: 1;
+    text-align: center;
+    padding: 1rem;
+    border-radius: 12px;
+}
+
+.search-filter-container {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.search-input-container {
+    position: relative;
+    flex: 1;
+    min-width: 300px;
+}
+
+.search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 3rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.search-input::placeholder {
+    color: var(--text-secondary);
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.filter-controls {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.filter-select {
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    min-width: 150px;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.no-results {
+    text-align: center;
+    margin: 3rem 0;
+}
+
+.empty-state-container {
+    display: flex;
+    justify-content: center;
+    margin: 3rem 0;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    max-width: 500px;
+}
+
+.empty-icon-container {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-blue), var(--purple-accent));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 2rem;
+}
+
+.empty-icon {
+    font-size: 2rem;
+    color: var(--text-primary);
+}
+
+.empty-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.empty-description {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 2rem;
+}
+
+.empty-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Text color utilities */
+.text-primary { color: var(--primary-blue) !important; }
+.text-success { color: var(--success-color) !important; }
+.text-secondary { color: var(--text-secondary) !important; }
+.text-purple { color: var(--purple-accent) !important; }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .projects-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .project-metadata {
+        grid-template-columns: 1fr;
+    }
+    
+    .search-filter-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .search-input-container {
+        min-width: unset;
+    }
+    
+    .filter-controls {
+        justify-content: space-between;
+    }
+    
+    .filter-select {
+        flex: 1;
+    }
+    
+    .empty-actions {
+        flex-direction: column;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const statusFilter = document.getElementById('statusFilter');
+    const sortBy = document.getElementById('sortBy');
+    const projectsGrid = document.getElementById('projectsGrid');
+    const noResults = document.getElementById('noResults');
+    const projectCards = document.querySelectorAll('.project-card');
+
+    function filterAndSortProjects() {
+        const searchTerm = searchInput?.value.toLowerCase() || '';
+        const statusValue = statusFilter?.value || '';
+        const sortValue = sortBy?.value || 'newest';
+        
+        let visibleCards = [];
+        
+        projectCards.forEach(card => {
+            const title = card.dataset.title;
+            const status = card.dataset.status;
+            const matchesSearch = title.includes(searchTerm);
+            const matchesStatus = !statusValue || status === statusValue;
+            
+            if (matchesSearch && matchesStatus) {
+                card.style.display = 'block';
+                visibleCards.push(card);
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        // Sort visible cards
+        visibleCards.sort((a, b) => {
+            switch(sortValue) {
+                case 'oldest':
+                    return parseFloat(a.dataset.date) - parseFloat(b.dataset.date);
+                case 'title':
+                    return a.dataset.title.localeCompare(b.dataset.title);
+                case 'status':
+                    return a.dataset.status.localeCompare(b.dataset.status);
+                default: // newest
+                    return parseFloat(b.dataset.date) - parseFloat(a.dataset.date);
+            }
+        });
+        
+        // Reorder DOM elements
+        visibleCards.forEach(card => {
+            projectsGrid?.appendChild(card);
+        });
+        
+        // Show/hide no results message
+        if (noResults) {
+            if (visibleCards.length === 0 && projectCards.length > 0) {
+                noResults.style.display = 'block';
+                projectsGrid.style.display = 'none';
+            } else {
+                noResults.style.display = 'none';
+                projectsGrid.style.display = 'grid';
+            }
+        }
+    }
+
+    // Event listeners
+    searchInput?.addEventListener('input', filterAndSortProjects);
+    statusFilter?.addEventListener('change', filterAndSortProjects);
+    sortBy?.addEventListener('change', filterAndSortProjects);
+});
+
+function analyzeProject(projectId) {
+    // Add loading state
+    const button = event.target;
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+    button.disabled = true;
+    button.style.opacity = '0.7';
+    
+    fetch(`/projects/${projectId}/analyze`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Show success message and redirect
+            showSuccessModal('Analysis started successfully! Redirecting...');
+            setTimeout(() => {
+                window.location.href = data.redirect_url;
+            }, 1500);
+        } else {
+            showErrorModal('Failed to start analysis: ' + data.error);
+            button.innerHTML = originalText;
+            button.disabled = false;
+            button.style.opacity = '1';
+        }
+    })
+    .catch(error => {
+        showErrorModal('Error starting analysis: ' + error.message);
+        button.innerHTML = originalText;
+        button.disabled = false;
+        button.style.opacity = '1';
+    });
+}
+
+function showSuccessModal(message) {
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-icon success">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h3 class="modal-title">Success!</h3>
+            <p class="modal-message">${message}</p>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    setTimeout(() => {
+        modal.remove();
+    }, 3000);
+}
+
+function showErrorModal(message) {
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-icon error">
+                <i class="fas fa-exclamation-circle"></i>
+            </div>
+            <h3 class="modal-title">Error</h3>
+            <p class="modal-message">${message}</p>
+            <button onclick="this.closest('.modal-overlay').remove()" class="btn btn-primary">OK</button>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+}
+</script>
+{% endblock %} 

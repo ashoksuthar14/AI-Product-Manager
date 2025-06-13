@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Voice Assistant{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+   <div class="page-header">
+      <div class="header-content">
+          <div class="header-title">
+              <h1 class="page-title">
+                  <i class="fas fa-microphone-lines icon"></i>
+                  Voice Assistant Demo
+              </h1>
+              <p class="page-subtitle">Ask anything about your workflow in natural language</p>
+          </div>
+      </div>
+   </div>
+
+   <!-- Assistant Card -->
+   <div class="glass-card voice-assistant-card" style="max-width:800px;margin:0 auto;">
+       <div class="flex items-center justify-between mb-4">
+           <div id="status-indicator" class="text-sm text-sky-300">Status: <span id="status">Idle</span></div>
+           <div>
+               <button id="start-btn" class="btn btn-primary"><i class="fas fa-play"></i> Start</button>
+               <button id="stop-btn" class="btn btn-secondary hidden"><i class="fas fa-stop"></i> Stop</button>
+           </div>
+       </div>
+
+       <!-- Messages area -->
+       <div id="messages" class="conversation-container" style="max-height:400px;overflow-y:auto;"></div>
+   </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/voice_agent.js') }}"></script>
+{% endblock %} 

@@ -1,0 +1,567 @@
+{% extends "base.html" %}
+
+{% block title %}Automation Dashboard - AI Product Manager{% endblock %}
+
+{% block content %}
+<!-- Header Section -->
+<div class="glass-card">
+    <div class="glass-card-header">
+        <i class="fas fa-robot"></i>
+        <h2>Automation Dashboard</h2>
+    </div>
+    <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+        Discover and deploy n8n workflows to automate your project tasks
+    </p>
+    
+    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+        <a href="{{ url_for('projects.projects') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i>
+            Back to Projects
+        </a>
+        <button onclick="generateAutomations()" class="btn btn-primary">
+            <i class="fas fa-magic"></i>
+            Generate Sample Automations
+        </button>
+    </div>
+</div>
+
+<!-- Project Selection -->
+<div class="glass-card">
+    <div class="glass-card-header">
+        <i class="fas fa-project-diagram"></i>
+        <h2>Select Project for Automation Analysis</h2>
+    </div>
+    
+    <div id="project-selection" class="analysis-grid">
+        <div style="text-align: center; padding: 2rem;">
+            <div class="loading-spinner"></div>
+            <p style="color: var(--text-secondary);">Loading projects...</p>
+        </div>
+    </div>
+</div>
+
+<!-- Automation Results -->
+<div id="automation-results" class="hidden">
+    <!-- Stats Overview -->
+    <div class="glass-card">
+        <div class="glass-card-header">
+            <i class="fas fa-chart-bar"></i>
+            <h2>Automation Statistics</h2>
+        </div>
+        
+        <div class="analysis-grid">
+            <div class="metric-card">
+                <div class="metric-value" id="total-automations">0</div>
+                <div class="metric-label">
+                    <i class="fas fa-robot"></i>
+                    Total Automations
+                </div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-value" id="communication-count" style="color: var(--success);">0</div>
+                <div class="metric-label">
+                    <i class="fas fa-comments"></i>
+                    Communication
+                </div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-value" id="data-count" style="color: var(--warning);">0</div>
+                <div class="metric-label">
+                    <i class="fas fa-database"></i>
+                    Data Processing
+                </div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-value" id="monitoring-count" style="color: #ff6b6b;">0</div>
+                <div class="metric-label">
+                    <i class="fas fa-chart-line"></i>
+                    Monitoring
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Automation Cards -->
+    <div id="automation-cards-container">
+        <!-- Automation cards will be dynamically added here -->
+    </div>
+</div>
+
+<!-- Empty State -->
+<div id="empty-state" class="glass-card" style="text-align: center;">
+    <div style="padding: 3rem 1rem;">
+        <i class="fas fa-magic" style="font-size: 4rem; color: var(--primary-blue); margin-bottom: 1rem; filter: drop-shadow(0 0 20px var(--primary-blue));"></i>
+        <h3 style="color: var(--text-primary); margin-bottom: 1rem; font-size: 2rem;">Ready to Automate Your Workflows?</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+            Select a project above to analyze its Product Manager workflow and discover automation opportunities with n8n,
+            or generate sample automations to get started!
+        </p>
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            <button onclick="generateAutomations()" class="btn btn-primary">
+                <i class="fas fa-magic"></i>
+                Generate Sample Automations
+            </button>
+            <a href="{{ url_for('projects.new_project') }}" class="btn btn-secondary">
+                <i class="fas fa-plus"></i>
+                Create New Project
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Copy Success Modal -->
+<div id="copy-modal" class="loading-overlay hidden">
+    <div class="glass-card" style="max-width: 400px; text-align: center;">
+        <div style="padding: 1rem;">
+            <i class="fas fa-check-circle" style="font-size: 3rem; color: var(--success); margin-bottom: 1rem; filter: drop-shadow(0 0 10px var(--success));"></i>
+            <h3 style="color: var(--text-primary); margin-bottom: 1rem;">Workflow Copied!</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+                The n8n workflow has been copied to your clipboard. You can now paste it into your n8n instance.
+            </p>
+            <button onclick="closeCopyModal()" class="btn btn-primary">
+                <i class="fas fa-thumbs-up"></i>
+                Got it!
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentProject = null;
+let automationData = [];
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadProjects();
+});
+
+async function loadProjects() {
+    try {
+        const response = await fetch('/projects/api/list');
+        const data = await response.json();
+        
+        const projectSelection = document.getElementById('project-selection');
+        
+        if (data.success && data.projects.length > 0) {
+            projectSelection.innerHTML = data.projects.map(project => `
+                <div class="metric-card" style="cursor: pointer; transition: all 0.3s ease;" 
+                     onclick="selectProject(${project.id}, '${project.title.replace(/'/g, "\\'")}')">
+                    <div style="margin-bottom: 1rem;">
+                        <i class="fas fa-project-diagram" style="font-size: 2rem; color: var(--primary-blue); margin-bottom: 0.5rem;"></i>
+                        <h4 style="color: var(--text-primary); margin-bottom: 0.5rem; font-size: 1.2rem;">${project.title}</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; text-transform: capitalize;">${project.status}</p>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
+                        ${project.has_analysis ? 
+                            '<span style="background: rgba(0, 255, 136, 0.1); color: var(--success); padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem; border: 1px solid rgba(0, 255, 136, 0.3);"><i class="fas fa-check-circle"></i> Analysis Available</span>' :
+                            '<span style="background: rgba(255, 170, 0, 0.1); color: var(--warning); padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem; border: 1px solid rgba(255, 170, 0, 0.3);"><i class="fas fa-clock"></i> No Analysis</span>'
+                        }
+                        <span style="color: var(--text-muted); font-size: 0.8rem;">
+                            <i class="fas fa-calendar"></i>
+                            ${new Date(project.created_at).toLocaleDateString()}
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            projectSelection.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
+                    <i class="fas fa-folder-open" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;"></i>
+                    <h3 style="color: var(--text-primary); margin-bottom: 1rem;">No Projects Found</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 2rem;">Create your first project to get started with automation analysis.</p>
+                    <a href="/projects/new" class="btn btn-primary">
+                        <i class="fas fa-plus"></i>
+                        Create Project
+                    </a>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Error loading projects:', error);
+        const projectSelection = document.getElementById('project-selection');
+        projectSelection.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
+                <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: var(--error); margin-bottom: 1rem;"></i>
+                <h3 style="color: var(--text-primary); margin-bottom: 1rem;">Error Loading Projects</h3>
+                <p style="color: var(--text-secondary);">Please refresh the page and try again.</p>
+            </div>
+        `;
+        showNotification('Error loading projects', 'error');
+    }
+}
+
+async function selectProject(projectId, projectTitle) {
+    currentProject = { id: projectId, title: projectTitle };
+    
+    // Show loading state
+    const automationResults = document.getElementById('automation-results');
+    const emptyState = document.getElementById('empty-state');
+    
+    emptyState.classList.add('hidden');
+    automationResults.classList.remove('hidden');
+    
+    // Show loading in automation cards
+    const automationCardsContainer = document.getElementById('automation-cards-container');
+    automationCardsContainer.innerHTML = `
+        <div class="glass-card" style="text-align: center;">
+            <div style="padding: 3rem;">
+                <div class="loading-spinner"></div>
+                <h3 style="color: var(--text-primary); margin-bottom: 1rem;">Analyzing Workflow...</h3>
+                <p style="color: var(--text-secondary);">Our AI is identifying automation opportunities in your project</p>
+            </div>
+        </div>
+    `;
+    
+    try {
+        const response = await fetch(`/automation/analyze/${projectId}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            automationData = data.automations;
+            displayAutomations(data.automations);
+            updateStats(data.automations);
+        } else {
+            automationCardsContainer.innerHTML = `
+                <div class="glass-card" style="text-align: center;">
+                    <div style="padding: 3rem;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: var(--error); margin-bottom: 1rem;"></i>
+                        <h3 style="color: var(--text-primary); margin-bottom: 1rem;">Analysis Error</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 2rem;">${data.error}</p>
+                        <button onclick="loadProjects(); document.getElementById('automation-results').classList.add('hidden'); document.getElementById('empty-state').classList.remove('hidden');" 
+                                class="btn btn-primary">
+                            <i class="fas fa-arrow-left"></i>
+                            Back to Projects
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Error analyzing project:', error);
+        showNotification('Error analyzing project for automation', 'error');
+    }
+}
+
+function displayAutomations(automations) {
+    const automationCardsContainer = document.getElementById('automation-cards-container');
+    
+    if (automations.length === 0) {
+        automationCardsContainer.innerHTML = `
+            <div class="glass-card" style="text-align: center;">
+                <div style="padding: 3rem;">
+                    <i class="fas fa-info-circle" style="font-size: 3rem; color: var(--warning); margin-bottom: 1rem;"></i>
+                    <h3 style="color: var(--text-primary); margin-bottom: 1rem;">No Automations Found</h3>
+                    <p style="color: var(--text-secondary);">No automation opportunities were identified in this project's workflow.</p>
+                </div>
+            </div>
+        `;
+        return;
+    }
+    
+    // Clear existing content
+    automationCardsContainer.innerHTML = '';
+    
+    automations.forEach((automation, index) => {
+        const tools = automation.integration_tools || [];
+        
+        // Define colors for different automation types
+        const colors = [
+            '#ff6b6b', // Red
+            '#4834d4', // Purple  
+            '#00d2d3', // Teal
+            '#ff9ff3', // Pink
+            '#ffa502', // Orange
+            '#2ed573'  // Green
+        ];
+        const color = colors[index % colors.length];
+        
+        // Create card element
+        const cardElement = document.createElement('div');
+        cardElement.className = 'glass-card automation-card';
+        cardElement.style.animation = `slideInUp 0.6s ease-out ${index * 0.1}s both`;
+        
+        cardElement.innerHTML = `
+            <div class="glass-card-header">
+                <div style="width: 60px; height: 60px; background: linear-gradient(135deg, ${color}, ${color}dd); border-radius: 50%; display: flex; align-items: center; justify-content: center; position: relative;">
+                    <i class="fas fa-robot" style="font-size: 1.5rem; color: white;"></i>
+                    <div style="position: absolute; inset: -2px; border-radius: 50%; padding: 2px; background: linear-gradient(45deg, var(--primary-blue), var(--secondary-blue)); mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); mask-composite: exclude;"></div>
+                </div>
+                <div>
+                    <h3 style="margin: 0; color: var(--text-primary); font-size: 1.3rem;">${automation.task_name}</h3>
+                    <p style="margin: 0; color: var(--text-secondary); font-size: 0.9rem;">
+                        <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                        n8n Workflow Ready
+                    </p>
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 2rem;">
+                <div style="margin-bottom: 1.5rem;">
+                    <h4 style="color: var(--primary-blue); margin-bottom: 0.5rem; display: flex; align-items: center;">
+                        <i class="fas fa-file-alt" style="margin-right: 0.5rem;"></i>
+                        Description
+                    </h4>
+                    <p style="color: var(--text-secondary); line-height: 1.6;">${automation.task_description}</p>
+                </div>
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <h4 style="color: var(--primary-blue); margin-bottom: 0.5rem; display: flex; align-items: center;">
+                        <i class="fas fa-lightbulb" style="margin-right: 0.5rem;"></i>
+                        Benefits
+                    </h4>
+                    <p style="color: var(--text-secondary); line-height: 1.6;">${automation.automation_benefits}</p>
+                </div>
+                
+                ${tools.length > 0 ? `
+                <div>
+                    <h4 style="color: var(--primary-blue); margin-bottom: 0.5rem; display: flex; align-items: center;">
+                        <i class="fas fa-puzzle-piece" style="margin-right: 0.5rem;"></i>
+                        Integration Tools
+                    </h4>
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                        ${tools.map(tool => `
+                            <span style="background: var(--glass-bg); color: var(--text-primary); padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem; border: 1px solid var(--glass-border);">${tool}</span>
+                        `).join('')}
+                    </div>
+                </div>
+                ` : ''}
+            </div>
+            
+            <div style="display: flex; gap: 1rem;">
+                <button class="btn btn-primary copy-btn" style="flex: 1;">
+                    <i class="fas fa-copy"></i>
+                    Copy Workflow
+                </button>
+                <button class="btn btn-secondary view-btn">
+                    <i class="fas fa-eye"></i>
+                    View JSON
+                </button>
+            </div>
+        `;
+        
+        // Add event listeners
+        const copyBtn = cardElement.querySelector('.copy-btn');
+        const viewBtn = cardElement.querySelector('.view-btn');
+        
+        copyBtn.addEventListener('click', () => {
+            copyWorkflowData(automation.task_name, automation.n8n_workflow);
+        });
+        
+        viewBtn.addEventListener('click', () => {
+            viewWorkflowData(automation.task_name, automation.n8n_workflow);
+        });
+        
+        automationCardsContainer.appendChild(cardElement);
+    });
+}
+
+function updateStats(automations) {
+    document.getElementById('total-automations').textContent = automations.length;
+    
+    // Categorize automations
+    let communication = 0, data = 0, monitoring = 0;
+    
+    automations.forEach(automation => {
+        const tools = automation.integration_tools || [];
+        const description = automation.task_description.toLowerCase();
+        
+        if (tools.some(tool => ['slack', 'email', 'discord', 'teams'].includes(tool.toLowerCase())) || 
+            description.includes('communication') || description.includes('notification')) {
+            communication++;
+        } else if (tools.some(tool => ['database', 'api', 'webhook'].includes(tool.toLowerCase())) || 
+                   description.includes('data') || description.includes('processing')) {
+            data++;
+        } else if (description.includes('monitor') || description.includes('track') || description.includes('report')) {
+            monitoring++;
+        }
+    });
+    
+    document.getElementById('communication-count').textContent = communication;
+    document.getElementById('data-count').textContent = data;
+    document.getElementById('monitoring-count').textContent = monitoring;
+}
+
+async function copyWorkflowData(name, workflowData) {
+    try {
+        const workflowJson = JSON.stringify(workflowData, null, 2);
+        await navigator.clipboard.writeText(workflowJson);
+        showCopyModal();
+    } catch (error) {
+        console.error('Error copying to clipboard:', error);
+        
+        // Fallback for browsers that don't support clipboard API
+        const textArea = document.createElement('textarea');
+        textArea.value = JSON.stringify(workflowData, null, 2);
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        
+        try {
+            document.execCommand('copy');
+            showCopyModal();
+        } catch (err) {
+            showNotification('Failed to copy workflow. Please try again.', 'error');
+        }
+        
+        document.body.removeChild(textArea);
+    }
+}
+
+function viewWorkflowData(name, workflowData) {
+    const workflowJson = JSON.stringify(workflowData, null, 2);
+    
+    // Create a modal to show the JSON
+    const modal = document.createElement('div');
+    modal.className = 'loading-overlay';
+    modal.innerHTML = `
+        <div class="glass-card" style="max-width: 90%; max-height: 85vh; overflow: hidden; display: flex; flex-direction: column;">
+            <div class="glass-card-header" style="border-bottom: 1px solid var(--glass-border);">
+                <i class="fas fa-code"></i>
+                <h3 style="margin: 0;">${name} - n8n Workflow</h3>
+                <button class="close-modal-btn" 
+                        style="margin-left: auto; background: none; border: none; color: var(--text-secondary); font-size: 1.5rem; cursor: pointer; padding: 0.5rem;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div style="flex: 1; overflow: auto; padding: 1rem;">
+                <div style="background: rgba(0, 0, 0, 0.3); border-radius: 8px; padding: 1rem; border: 1px solid var(--glass-border);">
+                    <pre style="color: var(--text-primary); font-size: 0.9rem; white-space: pre-wrap; margin: 0;"><code>${workflowJson}</code></pre>
+                </div>
+            </div>
+            <div style="padding: 1rem; border-top: 1px solid var(--glass-border); display: flex; gap: 1rem;">
+                <button class="copy-modal-btn btn btn-primary">
+                    <i class="fas fa-copy"></i> Copy Workflow
+                </button>
+                <button class="close-modal-btn btn btn-secondary">
+                    Close
+                </button>
+            </div>
+        </div>
+    `;
+    
+    // Add event listeners
+    const closeButtons = modal.querySelectorAll('.close-modal-btn');
+    const copyButton = modal.querySelector('.copy-modal-btn');
+    
+    closeButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.body.removeChild(modal);
+        });
+    });
+    
+    copyButton.addEventListener('click', () => {
+        copyWorkflowData(name, workflowData);
+    });
+    
+    document.body.appendChild(modal);
+}
+
+// Legacy functions for backward compatibility
+async function copyWorkflow(name, workflowJson) {
+    try {
+        await navigator.clipboard.writeText(workflowJson);
+        showCopyModal();
+    } catch (error) {
+        showNotification('Failed to copy workflow. Please try again.', 'error');
+    }
+}
+
+function viewWorkflow(name, workflowJson) {
+    viewWorkflowData(name, JSON.parse(workflowJson));
+}
+
+function showCopyModal() {
+    document.getElementById('copy-modal').classList.remove('hidden');
+}
+
+function closeCopyModal() {
+    document.getElementById('copy-modal').classList.add('hidden');
+}
+
+async function generateAutomations() {
+    // Show loading state
+    const automationResults = document.getElementById('automation-results');
+    const emptyState = document.getElementById('empty-state');
+    
+    emptyState.classList.add('hidden');
+    automationResults.classList.remove('hidden');
+    
+    const automationCardsContainer = document.getElementById('automation-cards-container');
+    automationCardsContainer.innerHTML = `
+        <div class="glass-card" style="text-align: center;">
+            <div style="padding: 3rem;">
+                <div class="loading-spinner"></div>
+                <h3 style="color: var(--text-primary); margin-bottom: 1rem;">Generating Sample Automations...</h3>
+                <p style="color: var(--text-secondary);">Creating automation workflows for common project management tasks</p>
+            </div>
+        </div>
+    `;
+    
+    try {
+        const response = await fetch('/automation/suggest?title=Sample Project&description=A sample project for automation demonstration');
+        const data = await response.json();
+        
+        if (data.success) {
+            automationData = data.automations;
+            displayAutomations(data.automations);
+            updateStats(data.automations);
+            showNotification('Sample automations generated successfully!', 'success');
+        } else {
+            throw new Error(data.error);
+        }
+    } catch (error) {
+        console.error('Error generating automations:', error);
+        showNotification('Error generating automations. Please try again.', 'error');
+        
+        // Show fallback automations
+        const fallbackAutomations = [
+            {
+                task_name: "Daily Progress Report",
+                task_description: "Automatically generate and send daily progress reports to stakeholders",
+                automation_benefits: "Saves time on manual reporting and ensures consistent communication",
+                integration_tools: ["Email", "Slack", "Google Sheets"],
+                n8n_workflow: {
+                    name: "Daily Progress Report",
+                    nodes: [],
+                    connections: {},
+                    active: false
+                }
+            }
+        ];
+        
+        automationData = fallbackAutomations;
+        displayAutomations(fallbackAutomations);
+        updateStats(fallbackAutomations);
+    }
+}
+
+function showNotification(message, type) {
+    // Create flash message
+    const flashContainer = document.createElement('div');
+    flashContainer.className = 'flash-messages';
+    flashContainer.innerHTML = `
+        <div class="flash-message flash-${type}">
+            <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+            <span>${message}</span>
+            <button class="flash-close" onclick="this.parentElement.parentElement.remove()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `;
+    
+    document.body.appendChild(flashContainer);
+    
+    // Auto remove after 4 seconds
+    setTimeout(() => {
+        if (document.body.contains(flashContainer)) {
+            document.body.removeChild(flashContainer);
+        }
+    }, 4000);
+}
+</script>
+{% endblock %} 

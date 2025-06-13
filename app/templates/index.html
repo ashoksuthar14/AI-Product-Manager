@@ -1,0 +1,324 @@
+{% extends "base.html" %}
+
+{% block title %}AI Product Manager - Intelligent Project Analysis{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="hero-content">
+        <div class="hero-text">
+            <h1 class="hero-title">
+                <span class="gradient-text">AI-Powered</span>
+                <br>Project Analysis
+            </h1>
+            <p class="hero-subtitle">
+                Let our team of AI agents collaborate to analyze your project, 
+                providing comprehensive insights from multiple expert perspectives.
+            </p>
+            <div class="hero-features">
+                <div class="feature-item">
+                    <i class="fas fa-brain"></i>
+                    <span>Multi-Agent Analysis</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-comments"></i>
+                    <span>Real-time Collaboration</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Detailed Insights</span>
+                </div>
+            </div>
+            <div class="hero-actions">
+                <a href="{{ url_for('main.analyze_page') }}" class="btn btn-primary btn-large">
+                    <i class="fas fa-rocket"></i>
+                    Start Analysis
+                </a>
+                <a href="#how-it-works" class="btn btn-secondary">
+                    <i class="fas fa-play"></i>
+                    How it Works
+                </a>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="agent-showcase">
+                <div class="agent-card" data-agent="pm">
+                    <div class="agent-icon agent-product-manager">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <h3>Product Manager</h3>
+                    <p>Market analysis & strategy</p>
+                </div>
+                <div class="agent-card" data-agent="dev">
+                    <div class="agent-icon agent-developer">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3>Developer</h3>
+                    <p>Technical feasibility</p>
+                </div>
+                <div class="agent-card" data-agent="qa">
+                    <div class="agent-icon agent-qa">
+                        <i class="fas fa-bug"></i>
+                    </div>
+                    <h3>QA Engineer</h3>
+                    <p>Quality assurance</p>
+                </div>
+                <div class="agent-card" data-agent="ai">
+                    <div class="agent-icon agent-ai-engineer">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>AI Engineer</h3>
+                    <p>AI/ML integration</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section id="how-it-works" class="how-it-works">
+    <div class="container">
+        <h2 class="section-title">How Our AI Agents Work Together</h2>
+        <div class="process-steps">
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Project Input</h3>
+                    <p>Provide your project details, requirements, and constraints</p>
+                </div>
+            </div>
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>AI Collaboration</h3>
+                    <p>Our agents analyze and discuss your project from different perspectives</p>
+                </div>
+            </div>
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>Comprehensive Report</h3>
+                    <p>Get detailed insights, recommendations, and project workflow</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.hero-section {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    padding: 4rem 2rem;
+}
+
+.hero-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+}
+
+.gradient-text {
+    background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 2rem;
+}
+
+.hero-features {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+}
+
+.feature-item i {
+    color: var(--primary-blue);
+    font-size: 1.2rem;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn-large {
+    padding: 1.25rem 2.5rem;
+    font-size: 1.1rem;
+}
+
+.agent-showcase {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.agent-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.agent-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-strong);
+}
+
+.agent-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+    margin: 0 auto 1rem;
+}
+
+.agent-card h3 {
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.agent-card p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.how-it-works {
+    padding: 6rem 2rem;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.section-title {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4rem;
+}
+
+.process-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.step-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.step-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-glow);
+}
+
+.step-number {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+    margin: 0 auto 1.5rem;
+}
+
+.step-content h3 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+}
+
+.step-content p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+    .hero-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        text-align: center;
+    }
+    
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-features {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .hero-actions {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .agent-showcase {
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+}
+</style>
+
+<script>
+// Add some interactive animations
+document.addEventListener('DOMContentLoaded', function() {
+    const agentCards = document.querySelectorAll('.agent-card');
+    
+    agentCards.forEach((card, index) => {
+        setTimeout(() => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            card.style.transition = 'all 0.6s ease';
+            
+            setTimeout(() => {
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100);
+        }, index * 200);
+    });
+});
+</script>
+{% endblock %} 

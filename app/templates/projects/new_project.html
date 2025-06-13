@@ -1,0 +1,335 @@
+{% extends "base.html" %}
+
+{% block title %}New Project - AI Product Manager{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
+    <div class="container mx-auto px-6 py-8">
+        <div class="max-w-4xl mx-auto">
+            <!-- Header -->
+            <div class="mb-8">
+                <div class="flex items-center mb-6">
+                    <a href="{{ url_for('projects.projects') }}" 
+                       class="group text-blue-400 hover:text-blue-300 transition-colors duration-300 flex items-center">
+                        <i class="fas fa-arrow-left mr-2 group-hover:-translate-x-1 transition-transform duration-300"></i>
+                        Back to Projects
+                    </a>
+                </div>
+                
+                <h1 class="text-5xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-4">
+                    Create New Project
+                </h1>
+                <p class="text-gray-300 text-lg">
+                    Define your project details and let our AI team provide comprehensive analysis
+                </p>
+            </div>
+
+            <!-- Form Card -->
+            <div class="bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20 hover:border-white/40 transition-all duration-500">
+                <form method="POST" action="{{ url_for('projects.new_project') }}" class="space-y-8">
+                    <!-- Project Title -->
+                    <div class="group">
+                        <label for="title" class="block text-sm font-bold text-blue-300 mb-3 uppercase tracking-wide flex items-center">
+                            <i class="fas fa-lightbulb mr-2"></i>
+                            Project Title *
+                        </label>
+                        <div class="relative">
+                            <input type="text" id="title" name="title" required
+                                   class="w-full px-6 py-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 hover:bg-white/10 text-lg"
+                                   placeholder="Enter your project title (e.g., E-commerce Mobile App)">
+                            <div class="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/20 to-purple-500/20 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                        </div>
+                    </div>
+
+                    <!-- Project Description -->
+                    <div class="group">
+                        <label for="description" class="block text-sm font-bold text-green-300 mb-3 uppercase tracking-wide flex items-center">
+                            <i class="fas fa-file-alt mr-2"></i>
+                            Description *
+                        </label>
+                        <div class="relative">
+                            <textarea id="description" name="description" rows="6" required
+                                      class="w-full px-6 py-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 hover:bg-white/10 resize-none"
+                                      placeholder="Describe your project in detail. What are you trying to build? What problem does it solve? Who is your target audience?"></textarea>
+                            <div class="absolute inset-0 rounded-2xl bg-gradient-to-r from-green-500/20 to-emerald-500/20 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                        </div>
+                    </div>
+
+                    <!-- Requirements and Constraints Grid -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <!-- Requirements -->
+                        <div class="group">
+                            <label for="requirements" class="block text-sm font-bold text-purple-300 mb-3 uppercase tracking-wide flex items-center">
+                                <i class="fas fa-list-check mr-2"></i>
+                                Requirements
+                            </label>
+                            <div class="relative">
+                                <textarea id="requirements" name="requirements" rows="5"
+                                          class="w-full px-6 py-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 hover:bg-white/10 resize-none"
+                                          placeholder="• Feature requirements&#10;• Technical specifications&#10;• Platform compatibility&#10;• Performance criteria"></textarea>
+                                <div class="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-500/20 to-indigo-500/20 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                            </div>
+                        </div>
+
+                        <!-- Constraints -->
+                        <div class="group">
+                            <label for="constraints" class="block text-sm font-bold text-orange-300 mb-3 uppercase tracking-wide flex items-center">
+                                <i class="fas fa-exclamation-triangle mr-2"></i>
+                                Constraints
+                            </label>
+                            <div class="relative">
+                                <textarea id="constraints" name="constraints" rows="5"
+                                          class="w-full px-6 py-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300 hover:bg-white/10 resize-none"
+                                          placeholder="• Budget limitations&#10;• Time constraints&#10;• Technical restrictions&#10;• Regulatory requirements"></textarea>
+                                <div class="absolute inset-0 rounded-2xl bg-gradient-to-r from-orange-500/20 to-red-500/20 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Timeline and Budget Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- Timeline -->
+                        <div class="group">
+                            <label for="timeline" class="block text-sm font-bold text-cyan-300 mb-3 uppercase tracking-wide flex items-center">
+                                <i class="fas fa-clock mr-2"></i>
+                                Timeline
+                            </label>
+                            <div class="relative">
+                                <input type="text" id="timeline" name="timeline"
+                                       class="w-full px-6 py-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-300 hover:bg-white/10"
+                                       placeholder="e.g., 3 months, 6 weeks, Q1 2024">
+                                <div class="absolute inset-0 rounded-2xl bg-gradient-to-r from-cyan-500/20 to-blue-500/20 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                            </div>
+                        </div>
+
+                        <!-- Budget -->
+                        <div class="group">
+                            <label for="budget" class="block text-sm font-bold text-emerald-300 mb-3 uppercase tracking-wide flex items-center">
+                                <i class="fas fa-dollar-sign mr-2"></i>
+                                Budget
+                            </label>
+                            <div class="relative">
+                                <input type="text" id="budget" name="budget"
+                                       class="w-full px-6 py-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 hover:bg-white/10"
+                                       placeholder="e.g., $50,000, €30,000, 100K">
+                                <div class="absolute inset-0 rounded-2xl bg-gradient-to-r from-emerald-500/20 to-green-500/20 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-4 pt-8">
+                        <button type="submit" 
+                                class="flex-1 group bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-8 py-4 rounded-2xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl border border-blue-500/30">
+                            <i class="fas fa-plus mr-3 group-hover:rotate-90 transition-transform duration-300"></i>
+                            Create Project
+                        </button>
+                        <a href="{{ url_for('projects.projects') }}" 
+                           class="group px-8 py-4 bg-white/10 hover:bg-white/20 text-white rounded-2xl font-bold text-lg transition-all duration-300 transform hover:scale-105 border border-white/20 hover:border-white/40 text-center">
+                            <i class="fas fa-times mr-3 group-hover:rotate-90 transition-transform duration-300"></i>
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Help Section -->
+            <div class="mt-8 bg-white/5 backdrop-blur-lg rounded-2xl p-6 border border-white/10">
+                <h3 class="text-xl font-bold text-white mb-4 flex items-center">
+                    <i class="fas fa-lightbulb text-yellow-400 mr-3"></i>
+                    Tips for Better Analysis
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+                    <div class="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <div class="text-blue-300 font-semibold mb-2">📝 Be Specific</div>
+                        <p class="text-gray-300">Provide detailed descriptions to get more accurate analysis</p>
+                    </div>
+                    <div class="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <div class="text-green-300 font-semibold mb-2">🎯 Define Goals</div>
+                        <p class="text-gray-300">Clear objectives help our AI team focus on what matters</p>
+                    </div>
+                    <div class="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <div class="text-purple-300 font-semibold mb-2">⚡ Include Context</div>
+                        <p class="text-gray-300">Market conditions, competitors, and user needs are important</p>
+                    </div>
+                    <div class="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <div class="text-orange-300 font-semibold mb-2">🔧 Technical Details</div>
+                        <p class="text-gray-300">Mention preferred technologies, platforms, or frameworks</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Enhanced Styles -->
+<style>
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes glow {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
+    }
+}
+
+/* Form animations */
+.group {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.group:nth-child(1) { animation-delay: 0.1s; }
+.group:nth-child(2) { animation-delay: 0.2s; }
+.group:nth-child(3) { animation-delay: 0.3s; }
+.group:nth-child(4) { animation-delay: 0.4s; }
+
+/* Enhanced focus effects */
+input:focus, textarea:focus {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+/* Button hover effects */
+button:hover, a:hover {
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+}
+
+/* Custom placeholder styling */
+::placeholder {
+    color: rgba(156, 163, 175, 0.8);
+}
+
+/* Enhanced scrollbar */
+textarea::-webkit-scrollbar {
+    width: 8px;
+}
+
+textarea::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+}
+
+textarea::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.3);
+    border-radius: 4px;
+}
+
+textarea::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.5);
+}
+
+/* Grid item hover effects */
+.grid > div:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+/* Label icon animations */
+label i {
+    transition: all 0.3s ease;
+}
+
+.group:focus-within label i {
+    transform: scale(1.2);
+    filter: drop-shadow(0 0 8px currentColor);
+}
+</style>
+
+<script>
+// Enhanced form validation and UX
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const inputs = form.querySelectorAll('input, textarea');
+    
+    // Add real-time validation feedback
+    inputs.forEach(input => {
+        input.addEventListener('input', function() {
+            validateField(this);
+        });
+        
+        input.addEventListener('blur', function() {
+            validateField(this);
+        });
+    });
+    
+    function validateField(field) {
+        const isValid = field.checkValidity();
+        const parent = field.closest('.group');
+        
+        if (field.hasAttribute('required') && field.value.trim() === '') {
+            parent.classList.add('error');
+            parent.classList.remove('success');
+        } else if (isValid && field.value.trim() !== '') {
+            parent.classList.add('success');
+            parent.classList.remove('error');
+        } else {
+            parent.classList.remove('error', 'success');
+        }
+    }
+    
+    // Form submission enhancement
+    form.addEventListener('submit', function(e) {
+        const submitButton = form.querySelector('button[type="submit"]');
+        const originalText = submitButton.innerHTML;
+        
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-3"></i>Creating Project...';
+        submitButton.disabled = true;
+        submitButton.classList.add('opacity-75');
+        
+        // If there's an error, restore the button
+        setTimeout(() => {
+            if (submitButton.disabled) {
+                submitButton.innerHTML = originalText;
+                submitButton.disabled = false;
+                submitButton.classList.remove('opacity-75');
+            }
+        }, 5000);
+    });
+    
+    // Auto-resize textareas
+    const textareas = document.querySelectorAll('textarea');
+    textareas.forEach(textarea => {
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+    });
+});
+
+// Add validation styles
+const style = document.createElement('style');
+style.textContent = `
+    .group.error input,
+    .group.error textarea {
+        border-color: rgba(239, 68, 68, 0.5) !important;
+        box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.3) !important;
+    }
+    
+    .group.success input,
+    .group.success textarea {
+        border-color: rgba(34, 197, 94, 0.5) !important;
+        box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.3) !important;
+    }
+    
+    .group.error label {
+        color: rgb(248, 113, 113) !important;
+    }
+    
+    .group.success label {
+        color: rgb(74, 222, 128) !important;
+    }
+`;
+document.head.appendChild(style);
+</script>
+{% endblock %}

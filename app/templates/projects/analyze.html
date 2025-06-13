@@ -1,0 +1,2250 @@
+{% extends "base.html" %}
+
+{% block title %}AI Project Analysis{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Project Input Form -->
+    <div class="glass-card">
+        <div class="glass-card-header">
+            <i class="fas fa-rocket"></i>
+            <h2>AI-Powered Project Analysis</h2>
+        </div>
+        
+        <form id="project-form" class="project-form">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="title" class="form-label">
+                        <i class="fas fa-lightbulb"></i>
+                        Project Title
+                    </label>
+                    <input type="text" id="title" name="title" class="form-input" 
+                           placeholder="Enter your project title..." required>
+                </div>
+
+                <div class="form-group">
+                    <label for="description" class="form-label">
+                        <i class="fas fa-file-alt"></i>
+                        Project Description
+                    </label>
+                    <textarea id="description" name="description" class="form-textarea" 
+                              placeholder="Describe your project in detail..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="requirements" class="form-label">
+                        <i class="fas fa-list-check"></i>
+                        Requirements
+                    </label>
+                    <textarea id="requirements" name="requirements" class="form-textarea" 
+                              placeholder="List your project requirements..." required></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="timeline" class="form-label">
+                            <i class="fas fa-calendar"></i>
+                            Timeline
+                        </label>
+                        <input type="text" id="timeline" name="timeline" class="form-input" 
+                               placeholder="e.g., 6 months" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="budget" class="form-label">
+                            <i class="fas fa-dollar-sign"></i>
+                            Budget
+                        </label>
+                        <input type="text" id="budget" name="budget" class="form-input" 
+                               placeholder="e.g., $100,000" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="constraints" class="form-label">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Constraints & Limitations
+                    </label>
+                    <textarea id="constraints" name="constraints" class="form-textarea" 
+                              placeholder="Any constraints or limitations..."></textarea>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-brain"></i>
+                    Analyze with AI Agents
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Analysis Results -->
+    <div id="analysis-results" class="analysis-results hidden">
+        <!-- Agent Conversations -->
+        <div class="glass-card">
+            <div class="glass-card-header">
+                <i class="fas fa-comments"></i>
+                <h2>AI Agent Collaboration</h2>
+            </div>
+            
+            <div id="conversation-container" class="conversation-container">
+                <!-- Agent messages will be dynamically added here -->
+            </div>
+        </div>
+
+        <!-- Final Analysis Summary -->
+        <div class="glass-card">
+            <div class="glass-card-header">
+                <i class="fas fa-chart-line"></i>
+                <h2>Analysis Summary</h2>
+            </div>
+            
+            <div id="analysis-summary" class="analysis-summary">
+                <!-- Summary will be populated here -->
+            </div>
+        </div>
+
+        <!-- Project Workflow -->
+        <div class="glass-card">
+            <div class="glass-card-header">
+                <i class="fas fa-project-diagram"></i>
+                <h2>Recommended Workflow</h2>
+            </div>
+            
+            <div id="project-workflow" class="project-workflow">
+                <!-- Workflow will be populated here -->
+            </div>
+        </div>
+
+        <!-- Voice Assistant -->
+        <div class="glass-card voice-assistant-card">
+            <div class="glass-card-header">
+                <i class="fas fa-microphone-alt"></i>
+                <h2>AI Voice Assistant</h2>
+                <div class="assistant-subtitle">Ask me anything about your project analysis!</div>
+            </div>
+            
+            <div class="voice-assistant-content">
+                <div class="assistant-avatar">
+                    <div class="avatar-circle">
+                        <i class="fas fa-robot"></i>
+                        <div class="voice-waves">
+                            <div class="wave"></div>
+                            <div class="wave"></div>
+                            <div class="wave"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="assistant-info">
+                    <h3>Your Project Analysis Assistant</h3>
+                    <p>I have complete knowledge of your project analysis results and can help you:</p>
+                    <ul>
+                        <li>🎯 Understand market opportunities and strategies</li>
+                        <li>⚙️ Clarify technical implementation details</li>
+                        <li>🧪 Explain quality assurance recommendations</li>
+                        <li>🤖 Discuss AI integration possibilities</li>
+                        <li>📊 Break down timelines and resource requirements</li>
+                        <li>💡 Answer any questions about your workflow</li>
+                    </ul>
+                </div>
+                
+                <div class="voice-controls">
+                    <div id="vapi-button-container"></div>
+                    <div class="voice-status">
+                        <span id="voice-status-text">Click to start voice conversation</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Fixed Voice Assistant Card in Bottom Corner -->
+<div id="fixed-voice-assistant" class="fixed-voice-card hidden">
+    <div class="voice-card-header">
+        <div class="voice-card-title">
+            <i class="fas fa-robot"></i>
+            <span>AI Voice Assistant</span>
+        </div>
+        <div class="voice-card-controls">
+            <button id="minimize-voice-btn" class="voice-control-btn" title="Minimize">
+                <i class="fas fa-minus"></i>
+            </button>
+            <button id="close-voice-btn" class="voice-control-btn" title="Close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+    
+    <div class="voice-card-content">
+        <div class="voice-avatar-section">
+            <div class="voice-avatar">
+                <i class="fas fa-robot"></i>
+                <div class="voice-waves-fixed">
+                    <div class="wave"></div>
+                    <div class="wave"></div>
+                    <div class="wave"></div>
+                </div>
+            </div>
+            <div class="voice-status-info">
+                <div class="voice-status-title">Voice Assistant</div>
+                <div id="fixed-voice-status" class="voice-status-text">Ready to help with your analysis</div>
+            </div>
+        </div>
+        
+        <div class="voice-interaction-section">
+            <div class="voice-conversation" id="voice-conversation">
+                <div class="conversation-message assistant-message">
+                    <i class="fas fa-robot"></i>
+                    <span>Hi! I have complete knowledge of your project analysis. Ask me anything!</span>
+                </div>
+            </div>
+            
+            <div class="voice-controls-section">
+                <div id="fixed-vapi-container"></div>
+                <button id="start-voice-btn" class="voice-start-btn">
+                    <i class="fas fa-microphone"></i>
+                    <span>Start Voice Chat</span>
+                </button>
+                <div class="voice-suggestions">
+                    <div class="suggestion-chip" onclick="askVoiceQuestion('Tell me about the market opportunities')">
+                        💼 Market Analysis
+                    </div>
+                    <div class="suggestion-chip" onclick="askVoiceQuestion('What is the technical feasibility?')">
+                        ⚙️ Technical Details
+                    </div>
+                    <div class="suggestion-chip" onclick="askVoiceQuestion('What are the quality requirements?')">
+                        🧪 Quality Plan
+                    </div>
+                    <div class="suggestion-chip" onclick="askVoiceQuestion('Tell me about AI integration possibilities')">
+                        🤖 AI Features
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+</div>
+
+<style>
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.form-grid {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.form-actions {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.analysis-results {
+    margin-top: 3rem;
+}
+
+.analysis-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.summary-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.summary-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-glow);
+}
+
+.summary-icon {
+    font-size: 2rem;
+    color: var(--primary-blue);
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 0 10px var(--primary-blue));
+}
+
+.summary-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.summary-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-blue);
+}
+
+.workflow-timeline {
+    position: relative;
+    padding-left: 2rem;
+}
+
+.workflow-timeline::before {
+    content: '';
+    position: absolute;
+    left: 1rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--primary-blue), var(--secondary-blue));
+}
+
+.workflow-item {
+    position: relative;
+    margin-bottom: 2rem;
+    padding-left: 2rem;
+}
+
+.workflow-item::before {
+    content: '';
+    position: absolute;
+    left: -0.5rem;
+    top: 0.5rem;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    background: var(--primary-blue);
+    box-shadow: 0 0 10px var(--primary-blue);
+}
+
+.workflow-content {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.workflow-phase {
+    font-weight: 600;
+    color: var(--primary-blue);
+    margin-bottom: 0.5rem;
+}
+
+.workflow-description {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* Voice Assistant Styles */
+.voice-assistant-card {
+    margin-top: 2rem;
+    background: linear-gradient(135deg, rgba(16, 24, 40, 0.95), rgba(31, 41, 55, 0.95));
+    border: 2px solid rgba(135, 206, 250, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.voice-assistant-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent, rgba(135, 206, 250, 0.1), transparent);
+    animation: shimmer 3s infinite;
+}
+
+.assistant-subtitle {
+    font-size: 0.9rem;
+    color: var(--primary-blue);
+    margin-top: 0.25rem;
+    opacity: 0.8;
+}
+
+.voice-assistant-content {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 2rem;
+    align-items: center;
+    padding: 1rem;
+    position: relative;
+    z-index: 1;
+}
+
+.assistant-avatar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.avatar-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-blue), #4fc3f7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: 0 0 30px rgba(135, 206, 250, 0.5);
+    animation: pulse 2s infinite;
+}
+
+.avatar-circle i {
+    font-size: 2rem;
+    color: white;
+    z-index: 2;
+}
+
+.voice-waves {
+    position: absolute;
+    inset: -10px;
+    opacity: 0;
+}
+
+.voice-waves.active {
+    opacity: 1;
+}
+
+.wave {
+    position: absolute;
+    border: 2px solid var(--primary-blue);
+    border-radius: 50%;
+    inset: 0;
+    animation: wave-pulse 1.5s infinite;
+}
+
+.wave:nth-child(2) {
+    animation-delay: 0.5s;
+}
+
+.wave:nth-child(3) {
+    animation-delay: 1s;
+}
+
+.assistant-info h3 {
+    color: var(--primary-blue);
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+}
+
+.assistant-info p {
+    color: var(--text-color);
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+.assistant-info ul {
+    list-style: none;
+    padding: 0;
+}
+
+.assistant-info li {
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+    padding-left: 0;
+    line-height: 1.5;
+}
+
+.voice-controls {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+}
+
+.voice-status {
+    padding: 0.5rem 1rem;
+    background: rgba(135, 206, 250, 0.1);
+    border-radius: 20px;
+    border: 1px solid rgba(135, 206, 250, 0.3);
+}
+
+.voice-status span {
+    color: var(--primary-blue);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Animations */
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 30px rgba(135, 206, 250, 0.5); }
+    50% { transform: scale(1.05); box-shadow: 0 0 40px rgba(135, 206, 250, 0.7); }
+}
+
+@keyframes wave-pulse {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(1.5); opacity: 0; }
+}
+
+/* Fixed Voice Assistant Card Styles */
+.fixed-voice-card {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 400px;
+    height: 500px;
+    background: linear-gradient(135deg, rgba(16, 24, 40, 0.98), rgba(31, 41, 55, 0.98));
+    border: 2px solid rgba(135, 206, 250, 0.4);
+    border-radius: 16px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3), 0 0 30px rgba(135, 206, 250, 0.2);
+    z-index: 1000;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.fixed-voice-card.minimized {
+    height: 60px;
+}
+
+.fixed-voice-card.hidden {
+    transform: translateY(100%) translateX(50%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.voice-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, rgba(135, 206, 250, 0.2), rgba(79, 195, 247, 0.2));
+    border-bottom: 1px solid rgba(135, 206, 250, 0.3);
+}
+
+.voice-card-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--primary-blue);
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.voice-card-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.voice-control-btn {
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(135, 206, 250, 0.2);
+    color: var(--primary-blue);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.voice-control-btn:hover {
+    background: rgba(135, 206, 250, 0.4);
+    transform: scale(1.1);
+}
+
+.voice-card-content {
+    padding: 16px;
+    height: calc(100% - 60px);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.voice-avatar-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.voice-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-blue), #4fc3f7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    animation: pulse 2s infinite;
+}
+
+.voice-avatar i {
+    font-size: 1.5rem;
+    color: white;
+    z-index: 2;
+}
+
+.voice-waves-fixed {
+    position: absolute;
+    inset: -8px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.voice-waves-fixed.active {
+    opacity: 1;
+}
+
+.voice-waves-fixed .wave {
+    position: absolute;
+    border: 2px solid var(--primary-blue);
+    border-radius: 50%;
+    inset: 0;
+    animation: wave-pulse 1.5s infinite;
+}
+
+.voice-status-info {
+    flex: 1;
+}
+
+.voice-status-title {
+    font-weight: 600;
+    color: var(--primary-blue);
+    margin-bottom: 4px;
+}
+
+.voice-status-text {
+    font-size: 0.9rem;
+    color: var(--text-color);
+    opacity: 0.8;
+}
+
+.voice-interaction-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.voice-conversation {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(135, 206, 250, 0.2);
+    border-radius: 12px;
+    padding: 12px;
+    overflow-y: auto;
+    max-height: 200px;
+}
+
+.conversation-message {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 12px;
+    animation: fadeInUp 0.3s ease;
+}
+
+.conversation-message:last-child {
+    margin-bottom: 0;
+}
+
+.conversation-message i {
+    color: var(--primary-blue);
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.conversation-message span {
+    color: var(--text-color);
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.conversation-message.user-message i {
+    color: #4ade80;
+}
+
+.voice-controls-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.voice-start-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, var(--primary-blue), #4fc3f7);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.voice-start-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(135, 206, 250, 0.4);
+}
+
+.voice-start-btn.active {
+    background: linear-gradient(135deg, #e53e3e, #ff6b6b);
+    animation: pulse-red 1s infinite;
+}
+
+.voice-start-btn.connecting {
+    background: linear-gradient(135deg, #f7931e, #ffb347);
+}
+
+.voice-suggestions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.suggestion-chip {
+    padding: 8px 12px;
+    background: rgba(135, 206, 250, 0.1);
+    border: 1px solid rgba(135, 206, 250, 0.3);
+    border-radius: 20px;
+    font-size: 0.8rem;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.suggestion-chip:hover {
+    background: rgba(135, 206, 250, 0.2);
+    transform: translateY(-1px);
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse-red {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .analysis-summary {
+        grid-template-columns: 1fr;
+    }
+    
+    .voice-assistant-content {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 1.5rem;
+    }
+    
+    .assistant-info {
+        order: 1;
+    }
+    
+    .assistant-avatar {
+        order: 2;
+    }
+    
+    .voice-controls {
+        order: 3;
+    }
+    
+    .fixed-voice-card {
+        width: calc(100vw - 20px);
+        right: 10px;
+        left: 10px;
+        height: 400px;
+    }
+    
+    .voice-suggestions {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('project-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    // Show loading
+    document.getElementById('loading-overlay').classList.remove('hidden');
+    
+    // Get form data
+    const formData = new FormData(this);
+    const projectData = {
+        title: formData.get('title'),
+        description: formData.get('description'),
+        requirements: formData.get('requirements'),
+        timeline: formData.get('timeline'),
+        budget: formData.get('budget'),
+        constraints: formData.get('constraints')
+    };
+    
+    try {
+        // Send to backend for analysis
+        const response = await fetch('/analyze', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(projectData)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            displayAnalysisResults(result);
+        } else {
+            alert('Analysis failed: ' + result.error);
+        }
+    } catch (error) {
+        alert('Error: ' + error.message);
+    } finally {
+        // Hide loading
+        document.getElementById('loading-overlay').classList.add('hidden');
+    }
+});
+
+function displayAnalysisResults(result) {
+    // Show results section
+    document.getElementById('analysis-results').classList.remove('hidden');
+    
+    // Display conversation
+    displayConversation(result.conversation_log);
+    
+    // Display summary
+    displaySummary(result.analysis);
+    
+    // Display workflow
+    displayWorkflow(result.analysis);
+    
+    // Add save button
+    addSaveButton(result);
+    
+    // Initialize voice assistant with workflow knowledge
+    initializeVoiceAssistant(result);
+    
+    // Scroll to results
+    document.getElementById('analysis-results').scrollIntoView({ behavior: 'smooth' });
+}
+
+function displayConversation(conversationLog) {
+    const container = document.getElementById('conversation-container');
+    container.innerHTML = '';
+    
+    // Parse conversation log and create agent messages
+    const messages = parseConversationLog(conversationLog);
+    
+    messages.forEach((message, index) => {
+        setTimeout(() => {
+            const messageElement = createAgentMessage(message);
+            container.appendChild(messageElement);
+        }, index * 500); // Stagger the messages
+    });
+}
+
+function parseConversationLog(log) {
+    // This would parse the actual conversation log
+    // For now, return sample messages
+    return [
+        {
+            agent: 'Product Manager',
+            type: 'STARTING',
+            content: 'I\'ll begin with market and product strategy analysis.',
+            avatar: 'fas fa-user-tie',
+            class: 'agent-product-manager'
+        },
+        {
+            agent: 'Developer',
+            type: 'REVIEWING',
+            content: 'Reviewing product strategy to assess technical feasibility...',
+            avatar: 'fas fa-code',
+            class: 'agent-developer'
+        },
+        {
+            agent: 'QA Engineer',
+            type: 'ANALYZING',
+            content: 'Analyzing quality requirements based on specifications...',
+            avatar: 'fas fa-bug',
+            class: 'agent-qa'
+        },
+        {
+            agent: 'AI Engineer',
+            type: 'RECOMMENDATIONS',
+            content: 'AI integration feasible. Suggest starting with basic ML features.',
+            avatar: 'fas fa-brain',
+            class: 'agent-ai-engineer'
+        }
+    ];
+}
+
+function createAgentMessage(message) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'agent-message';
+    
+    messageDiv.innerHTML = `
+        <div class="agent-header">
+            <div class="agent-avatar ${message.class}">
+                <i class="${message.avatar}"></i>
+            </div>
+            <div>
+                <div class="agent-name">${message.agent}</div>
+                <div class="agent-role">${message.type}</div>
+            </div>
+        </div>
+        <div class="agent-content">
+            ${message.content}
+        </div>
+    `;
+    
+    return messageDiv;
+}
+
+function displaySummary(analysis) {
+    const container = document.getElementById('analysis-summary');
+    
+    const summaryCards = [
+        {
+            icon: 'fas fa-chart-line',
+            title: 'Feasibility Score',
+            value: '8.5/10'
+        },
+        {
+            icon: 'fas fa-clock',
+            title: 'Estimated Timeline',
+            value: '6 months'
+        },
+        {
+            icon: 'fas fa-users',
+            title: 'Team Size',
+            value: '8 members'
+        },
+        {
+            icon: 'fas fa-exclamation-triangle',
+            title: 'Risk Level',
+            value: 'Medium'
+        }
+    ];
+    
+    container.innerHTML = summaryCards.map(card => `
+        <div class="summary-card">
+            <div class="summary-icon">
+                <i class="${card.icon}"></i>
+            </div>
+            <div class="summary-title">${card.title}</div>
+            <div class="summary-value">${card.value}</div>
+        </div>
+    `).join('');
+}
+
+function displayWorkflow(analysis) {
+    const container = document.getElementById('project-workflow');
+    
+    const workflowPhases = [
+        {
+            phase: 'Phase 1: Planning & Design',
+            description: 'Requirements gathering, system design, and architecture planning.',
+            duration: '4 weeks'
+        },
+        {
+            phase: 'Phase 2: Core Development',
+            description: 'Backend development, database setup, and core functionality.',
+            duration: '12 weeks'
+        },
+        {
+            phase: 'Phase 3: Frontend & Integration',
+            description: 'User interface development and system integration.',
+            duration: '8 weeks'
+        },
+        {
+            phase: 'Phase 4: Testing & Deployment',
+            description: 'Quality assurance, testing, and production deployment.',
+            duration: '4 weeks'
+        }
+    ];
+    
+    container.innerHTML = `
+        <div class="workflow-timeline">
+            ${workflowPhases.map(phase => `
+                <div class="workflow-item">
+                    <div class="workflow-content">
+                        <div class="workflow-phase">${phase.phase}</div>
+                        <div class="workflow-description">${phase.description}</div>
+                        <div style="margin-top: 0.5rem; color: var(--primary-blue); font-weight: 500;">
+                            Duration: ${phase.duration}
+                        </div>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+// Voice Assistant Integration - Simplified implementation
+var vapiInstance = null;
+const assistant = "bf9915d0-991e-402c-8d9a-7831d3c7d812"; // Substitute with your assistant ID
+const apiKey = "af9f949f-9316-41e9-8d1f-c44e42bd6844"; // Substitute with your Public key from Vapi Dashboard.
+const buttonConfig = {
+    position: "bottom-right",
+    offset: "40px",
+    width: "60px",
+    height: "60px",
+    idle: {
+        color: "rgb(135, 206, 250)",
+        type: "pill",
+        title: "Ask about your analysis",
+        subtitle: "Voice assistant ready",
+        icon: "https://unpkg.com/lucide@latest/dist/esm/icons/mic.js"
+    },
+    loading: {
+        color: "rgb(135, 206, 250)",
+        type: "pill",
+        title: "Connecting...",
+        subtitle: "Please wait",
+        icon: "https://unpkg.com/lucide@latest/dist/esm/icons/loader-2.js"
+    },
+    active: {
+        color: "rgb(255, 107, 107)",
+        type: "pill",
+        title: "Voice call active",
+        subtitle: "Click to end call",
+        icon: "https://unpkg.com/lucide@latest/dist/esm/icons/phone-off.js"
+    }
+}; // Button configuration
+
+let currentAnalysisData = null;
+
+function initializeVoiceAssistant(analysisResult) {
+    console.log('🎤 Initializing voice assistant with analysis:', analysisResult);
+    
+    // Store analysis data for the voice assistant context
+    currentAnalysisData = analysisResult;
+    
+    // Show the fixed voice assistant card
+    const fixedVoiceCard = document.getElementById('fixed-voice-assistant');
+    if (fixedVoiceCard) {
+        fixedVoiceCard.classList.remove('hidden');
+        console.log('✅ Fixed voice assistant card displayed');
+    }
+    
+    // Update the original button container to show launch button
+    const buttonContainer = document.getElementById('vapi-button-container');
+    buttonContainer.innerHTML = `
+        <button id="voice-assistant-btn" class="voice-assistant-btn" onclick="showFixedVoiceCard()">
+            <i class="fas fa-expand"></i>
+            <span>Open Voice Assistant</span>
+        </button>
+        <div id="debug-info" style="margin-top: 10px; font-size: 12px; color: #666;">
+            Status: Initializing...
+        </div>
+        <button id="test-vapi-btn" style="margin-top: 8px; padding: 6px 12px; background: #4ade80; color: white; border: none; border-radius: 8px; font-size: 11px; cursor: pointer;" onclick="debugVoiceError()">
+            🧪 Test Voice
+        </button>
+    `;
+    
+    // Set up fixed voice assistant controls
+    setupFixedVoiceAssistant();
+    
+    // Add button styles
+    addVoiceButtonStyles();
+    
+    // Initialize Vapi with simple script
+    initializeSimpleVapi();
+}
+
+function addVoiceButtonStyles() {
+    // Remove existing style if it exists
+    const existingStyle = document.getElementById('voice-assistant-styles');
+    if (existingStyle) existingStyle.remove();
+    
+    const style = document.createElement('style');
+    style.id = 'voice-assistant-styles';
+    style.textContent = `
+        .voice-assistant-btn {
+            background: linear-gradient(135deg, var(--primary-blue), #4fc3f7);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(135, 206, 250, 0.4);
+            min-width: 180px;
+            justify-content: center;
+        }
+        
+        .voice-assistant-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(135, 206, 250, 0.6);
+        }
+        
+        .voice-assistant-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .voice-assistant-btn.active {
+            background: linear-gradient(135deg, #e53e3e, #ff6b6b);
+            animation: pulse-red 1s infinite;
+        }
+        
+        .voice-assistant-btn.connecting {
+            background: linear-gradient(135deg, #f7931e, #ffb347);
+            animation: pulse-orange 1s infinite;
+        }
+        
+        @keyframes pulse-red {
+            0%, 100% { box-shadow: 0 4px 15px rgba(229, 62, 62, 0.4); }
+            50% { box-shadow: 0 6px 25px rgba(229, 62, 62, 0.8); }
+        }
+        
+        @keyframes pulse-orange {
+            0%, 100% { box-shadow: 0 4px 15px rgba(247, 147, 30, 0.4); }
+            50% { box-shadow: 0 6px 25px rgba(247, 147, 30, 0.8); }
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// Simplified Vapi initialization using the reliable script approach
+function initializeSimpleVapi() {
+    updateDebugInfo('Loading Vapi SDK...');
+    
+    // Check if already loaded
+    if (window.vapiSDK && vapiInstance) {
+        console.log('✅ Vapi already initialized');
+        setupVapiEventListeners();
+        updateDebugInfo('Voice assistant ready!');
+        enableCustomButton();
+        return;
+    }
+    
+    // Use the reliable script loading approach
+    (function (d, t) {
+        var g = document.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        g.src = "https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";
+        g.defer = true;
+        g.async = true;
+        s.parentNode.insertBefore(g, s);
+
+        g.onload = function () {
+            try {
+                console.log('🎤 Vapi SDK loaded, creating instance...');
+                updateDebugInfo('SDK loaded, creating instance...');
+                
+                vapiInstance = window.vapiSDK.run({
+                    apiKey: apiKey, // mandatory
+                    assistant: assistant, // mandatory
+                    config: buttonConfig, // optional
+                });
+                
+                if (vapiInstance) {
+                    console.log('✅ Vapi instance created successfully');
+                    setupVapiEventListeners();
+                    updateDebugInfo('Voice assistant ready! Use the floating button.');
+                    enableCustomButton();
+                    
+                    // Update our custom button to show success
+                    const button = document.getElementById('voice-assistant-btn');
+                    if (button) {
+                        button.disabled = false;
+                        button.innerHTML = '<i class="fas fa-check"></i><span>Voice Ready</span>';
+                        button.style.background = 'linear-gradient(135deg, #4ade80, #22c55e)';
+                        button.onclick = () => {
+                            showFixedVoiceCard();
+                        };
+                    }
+                } else {
+                    throw new Error('Vapi instance creation returned null');
+                }
+                
+            } catch (error) {
+                console.error('❌ Error creating Vapi instance:', error);
+                updateDebugInfo('Error: ' + (error.message || error));
+                handleVapiError(error.message || 'Failed to create voice assistant');
+                
+                // Show error on button
+                const button = document.getElementById('voice-assistant-btn');
+                if (button) {
+                    button.innerHTML = '<i class="fas fa-exclamation-triangle"></i><span>Voice Error</span>';
+                    button.disabled = false;
+                    button.onclick = () => {
+                        debugVoiceError();
+                    };
+                }
+            }
+        };
+        
+        g.onerror = function(error) {
+            console.error('❌ Failed to load Vapi SDK:', error);
+            updateDebugInfo('Failed to load SDK');
+            handleVapiError('Failed to load voice SDK');
+        };
+        
+    })(document, "script");
+}
+
+function setupVapiEventListeners() {
+    if (!vapiInstance) return;
+    
+    try {
+        // Set up event listeners with error handling
+        vapiInstance.on('call-start', () => {
+            console.log('🎙️ Voice call started');
+            updateVoiceStatus('🔊 Connected! Ask me anything about your project analysis.');
+            updateFixedVoiceStatus('🔊 Connected! Ask me anything about your project analysis.');
+            activateVoiceWaves();
+            activateFixedVoiceWaves();
+            updateDebugInfo('Voice call is active - floating button is live!');
+            updateFixedVoiceButton('active');
+            
+            // Send comprehensive project context to the assistant when call starts
+            setTimeout(() => {
+                const contextMessage = createContextPrompt();
+                console.log('📤 Sending context to assistant:', contextMessage.substring(0, 200) + '...');
+                
+                // Try multiple methods to send context
+                let contextSent = false;
+                
+                // Method 1: Direct send
+                if (vapiInstance.send && !contextSent) {
+                    try {
+                        vapiInstance.send({
+                            type: 'context',
+                            message: contextMessage
+                        });
+                        contextSent = true;
+                        console.log('✅ Context sent via send method');
+                    } catch (e) {
+                        console.log('❌ Send method failed:', e);
+                    }
+                }
+                
+                // Method 2: Send message
+                if (vapiInstance.sendMessage && !contextSent) {
+                    try {
+                        vapiInstance.sendMessage(contextMessage);
+                        contextSent = true;
+                        console.log('✅ Context sent via sendMessage method');
+                    } catch (e) {
+                        console.log('❌ SendMessage method failed:', e);
+                    }
+                }
+                
+                // Method 3: Set system prompt
+                if (vapiInstance.setSystemPrompt && !contextSent) {
+                    try {
+                        vapiInstance.setSystemPrompt(contextMessage);
+                        contextSent = true;
+                        console.log('✅ Context sent via setSystemPrompt method');
+                    } catch (e) {
+                        console.log('❌ SetSystemPrompt method failed:', e);
+                    }
+                }
+                
+                // Method 4: Say initial context
+                if (!contextSent) {
+                    console.log('📢 Using say method as fallback...');
+                    const briefContext = createBriefContextMessage();
+                    setTimeout(() => {
+                        if (vapiInstance.say) {
+                            vapiInstance.say(briefContext);
+                            console.log('✅ Brief context spoken to assistant');
+                        }
+                    }, 2000);
+                }
+                
+                vapiInstance.contextSent = contextSent;
+            }, 1500); // Longer delay to ensure connection is fully established
+        });
+        
+        vapiInstance.on('call-end', () => {
+            console.log('📞 Voice call ended');
+            updateVoiceStatus('Voice chat ended. Click the floating button to start again.');
+            updateFixedVoiceStatus('Voice chat ended. Click to start again.');
+            deactivateVoiceWaves();
+            deactivateFixedVoiceWaves();
+            updateDebugInfo('Voice call ended');
+            updateFixedVoiceButton('idle');
+        });
+        
+        vapiInstance.on('speech-start', () => {
+            console.log('🎤 User speaking...');
+            updateVoiceStatus('Listening to your question...');
+            updateFixedVoiceStatus('Listening to your question...');
+        });
+        
+        vapiInstance.on('speech-end', () => {
+            console.log('🔇 User finished speaking');
+            updateVoiceStatus('Processing your question...');
+            updateFixedVoiceStatus('Processing your question...');
+        });
+        
+        vapiInstance.on('message', (message) => {
+            console.log('💬 Assistant message:', message);
+            updateVoiceStatus('Assistant is responding...');
+            updateFixedVoiceStatus('Assistant is responding...');
+            
+            // Add assistant message to fixed card conversation
+            if (message && message.content) {
+                addConversationMessage('assistant', message.content);
+            }
+            
+            // If this is the first message and we haven't sent context yet, send it
+            if (message && message.type === 'assistant-message' && !vapiInstance.contextSent) {
+                console.log('📤 Sending context with first message...');
+                const contextMsg = `Please remember: ${prepareDetailedContext()}`;
+                setTimeout(() => {
+                    if (vapiInstance.say) {
+                        vapiInstance.say(contextMsg);
+                    }
+                    vapiInstance.contextSent = true;
+                }, 500);
+            }
+        });
+        
+        vapiInstance.on('transcript', (transcript) => {
+            console.log('📝 Conversation transcript:', transcript);
+            // Log user speech for debugging
+            if (transcript.role === 'user') {
+                console.log('👤 User said:', transcript.content);
+                updateVoiceStatus('Processing: "' + transcript.content.substring(0, 50) + '..."');
+                updateFixedVoiceStatus('Processing: "' + transcript.content.substring(0, 50) + '..."');
+                
+                // Add user message to fixed card conversation
+                addConversationMessage('user', transcript.content);
+            }
+        });
+        
+        vapiInstance.on('error', (error) => {
+            console.error('❌ Vapi error:', error);
+            updateDebugInfo('Error: ' + (error.message || error));
+            updateVoiceStatus('Error occurred. Please try again.');
+            updateFixedVoiceStatus('Error occurred. Please try again.');
+            updateFixedVoiceButton('idle');
+        });
+        
+        console.log('✅ Event listeners set up successfully');
+        
+    } catch (error) {
+        console.error('❌ Error setting up event listeners:', error);
+        updateDebugInfo('Error setting up listeners: ' + error.message);
+    }
+}
+
+function enableCustomButton() {
+    const button = document.getElementById('voice-assistant-btn');
+    if (!button) return;
+    
+    button.disabled = false;
+    button.onclick = function() {
+        console.log('Custom button clicked, vapiInstance:', vapiInstance);
+        
+        if (!vapiInstance) {
+            alert('Voice assistant not ready. Please try again in a moment.');
+            return;
+        }
+        
+        try {
+            updateCustomButton('connecting');
+            updateDebugInfo('Starting voice call...');
+            
+            // Start the voice call
+            vapiInstance.start();
+            
+        } catch (error) {
+            console.error('Error starting voice call:', error);
+            updateDebugInfo('Error starting call: ' + error.message);
+            updateCustomButton('idle');
+            alert('Failed to start voice call: ' + error.message);
+        }
+    };
+    
+    // Also enable the fixed voice assistant start button
+    const startVoiceBtn = document.getElementById('start-voice-btn');
+    if (startVoiceBtn) {
+        startVoiceBtn.disabled = false;
+        console.log('✅ Fixed voice assistant button enabled');
+    }
+}
+
+function prepareProjectContext() {
+    if (!currentAnalysisData) {
+        console.log('⚠️ No analysis data available for voice assistant');
+        return `I'm a voice assistant ready to help you understand your project analysis. 
+                However, no analysis data is currently available. 
+                Please complete the project analysis first.`;
+    }
+    
+    console.log('📋 Preparing project context for voice assistant...');
+    
+    // Extract key information from analysis
+    const analysis = currentAnalysisData.analysis || {};
+    const pmAnalysis = analysis.product_management || {};
+    const techAnalysis = analysis.technical_development || {};
+    const qaAnalysis = analysis.quality_assurance || {};
+    const aiAnalysis = analysis.ai_engineering || {};
+    
+    // Create a comprehensive but concise context
+    const contextSummary = `
+    PROJECT ANALYSIS SUMMARY:
+    
+    I am your AI voice assistant with complete knowledge of your project analysis results.
+    
+    ANALYSIS OVERVIEW:
+    - Market Analysis: ${pmAnalysis.market_analysis ? 'Completed' : 'Pending'}
+    - Technical Feasibility: ${techAnalysis.technical_feasibility ? 'Assessed' : 'Pending'}  
+    - Quality Assurance: ${qaAnalysis.test_strategy ? 'Planned' : 'Pending'}
+    - AI Integration: ${aiAnalysis.ai_feasibility ? 'Evaluated' : 'Pending'}
+    
+    I can help you understand:
+    🎯 Market opportunities and competitive positioning
+    ⚙️ Technical implementation approaches and challenges
+    🧪 Quality assurance strategies and testing plans
+    🤖 AI/ML integration possibilities and recommendations
+    📊 Timeline estimates and resource requirements
+    ⚠️ Risk assessments and mitigation strategies
+    💡 Strategic recommendations and next steps
+    
+    Ask me anything about your project analysis - I'm here to help explain and clarify!
+    
+    Full Analysis Data: ${JSON.stringify(analysis, null, 2)}
+    `;
+    
+    console.log('✅ Project context prepared for voice assistant');
+    return contextSummary;
+}
+
+function prepareDetailedContext() {
+    if (!currentAnalysisData) {
+        return "I'm your project analysis voice assistant, but no analysis data is available yet. Please complete the project analysis first so I can help you understand the results.";
+    }
+    
+    console.log('📋 Preparing detailed context for voice assistant...');
+    
+    const analysis = currentAnalysisData.analysis || {};
+    const conversation = currentAnalysisData.conversation_log || '';
+    
+    // Extract specific analysis components
+    const pmOverview = analysis.pm_overview || '';
+    const productMgmt = analysis.product_management || {};
+    const techDev = analysis.technical_development || {};
+    const qualityAssurance = analysis.quality_assurance || {};
+    const aiEngineering = analysis.ai_engineering || {};
+    
+    const detailedContext = `
+SYSTEM: You are an expert AI voice assistant specializing in project analysis. You have complete knowledge of a comprehensive project analysis that was just completed by a team of AI agents including a Product Manager, Developer, QA Engineer, and AI Engineer.
+
+YOUR ROLE:
+- Answer questions about the project analysis in a conversational, helpful manner
+- Explain complex concepts in simple terms
+- Provide specific details from the analysis when asked
+- Help users understand the implications and next steps
+- Be friendly, knowledgeable, and engaging in conversation
+
+PROJECT ANALYSIS RESULTS:
+
+=== PRODUCT MANAGER OVERVIEW ===
+${pmOverview}
+
+=== MARKET & PRODUCT STRATEGY ===
+${JSON.stringify(productMgmt, null, 2)}
+
+=== TECHNICAL DEVELOPMENT ANALYSIS ===
+${JSON.stringify(techDev, null, 2)}
+
+=== QUALITY ASSURANCE PLAN ===
+${JSON.stringify(qualityAssurance, null, 2)}
+
+=== AI ENGINEERING RECOMMENDATIONS ===
+${JSON.stringify(aiEngineering, null, 2)}
+
+=== TEAM CONVERSATION LOG ===
+${conversation}
+
+CONVERSATION GUIDELINES:
+- When asked about market opportunities, reference the Product Manager's analysis
+- For technical questions, use the Developer's technical feasibility assessment
+- For quality concerns, explain the QA Engineer's testing strategy
+- For AI features, discuss the AI Engineer's recommendations
+- Always provide specific, actionable insights based on this analysis
+- Keep responses conversational but informative
+- Ask follow-up questions to better help the user
+
+Remember: You have complete knowledge of this specific project analysis and should always reference the actual data provided above when answering questions.
+`;
+    
+    console.log('✅ Detailed context prepared for voice assistant');
+    return detailedContext;
+}
+
+function createDynamicAssistant() {
+    if (!currentAnalysisData) {
+        console.log('⚠️ No analysis data for dynamic assistant creation');
+        return null;
+    }
+    
+    console.log('🤖 Creating dynamic assistant with project context...');
+    
+    try {
+        // Create a custom assistant configuration with the project data
+        const assistantConfig = {
+            name: "Project Analysis Assistant",
+            voice: {
+                provider: "playht",
+                voiceId: "jennifer"
+            },
+            model: {
+                provider: "openai",
+                model: "gpt-4",
+                systemMessage: prepareDetailedContext(),
+                temperature: 0.7,
+                maxTokens: 500
+            },
+            firstMessage: "Hi! I'm your AI voice assistant and I have complete knowledge of your project analysis. What would you like to know about your project? I can discuss market opportunities, technical feasibility, quality assurance plans, AI recommendations, or any other aspect of the analysis.",
+            responseDelaySeconds: 0.5
+        };
+        
+        console.log('✅ Dynamic assistant configuration created');
+        return assistantConfig;
+        
+    } catch (error) {
+        console.log('❌ Failed to create dynamic assistant:', error);
+        return null;
+    }
+}
+
+function createContextPrompt() {
+    if (!currentAnalysisData) {
+        return "I'm ready to help with project analysis, but no data is available yet.";
+    }
+    
+    const analysis = currentAnalysisData.analysis || {};
+    
+    // Create a concise but comprehensive context prompt
+    return `You are now a voice assistant with complete knowledge of a project analysis. Here's the data:
+
+PM OVERVIEW: ${analysis.pm_overview || 'Not available'}
+
+PRODUCT ANALYSIS: ${JSON.stringify(analysis.product_management || {}, null, 1)}
+
+TECHNICAL ANALYSIS: ${JSON.stringify(analysis.technical_development || {}, null, 1)}
+
+QA ANALYSIS: ${JSON.stringify(analysis.quality_assurance || {}, null, 1)}
+
+AI ANALYSIS: ${JSON.stringify(analysis.ai_engineering || {}, null, 1)}
+
+Please answer all questions based on this specific project analysis data. Be conversational and helpful.`;
+}
+
+function createBriefContextMessage() {
+    if (!currentAnalysisData) {
+        return "I'm ready to help, but I don't have access to your project analysis data yet.";
+    }
+    
+    return `I have complete knowledge of your project analysis including market opportunities, technical feasibility, quality assurance plans, and AI recommendations. What would you like to know about your project?`;
+}
+
+function updateVoiceStatus(message) {
+    const statusElement = document.getElementById('voice-status-text');
+    if (statusElement) {
+        statusElement.textContent = message;
+    }
+}
+
+function updateDebugInfo(message) {
+    const debugElement = document.getElementById('debug-info');
+    if (debugElement) {
+        debugElement.textContent = 'Status: ' + message;
+        debugElement.style.color = message.includes('Error') ? '#ff6b6b' : 
+                                   message.includes('ready') ? '#4fc3f7' : '#666';
+    }
+    console.log('Debug:', message);
+}
+
+function activateVoiceWaves() {
+    const waves = document.querySelector('.voice-waves');
+    if (waves) {
+        waves.classList.add('active');
+    }
+}
+
+function deactivateVoiceWaves() {
+    const waves = document.querySelector('.voice-waves');
+    if (waves) {
+        waves.classList.remove('active');
+    }
+}
+
+function updateCustomButton(state) {
+    const button = document.getElementById('voice-assistant-btn');
+    if (!button) return;
+    
+    // Remove all state classes
+    button.classList.remove('active', 'connecting');
+    
+    switch(state) {
+        case 'idle':
+            button.innerHTML = '<i class="fas fa-microphone"></i><span>Start Voice Chat</span>';
+            break;
+        case 'connecting':
+            button.classList.add('connecting');
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Connecting...</span>';
+            break;
+        case 'active':
+            button.classList.add('active');
+            button.innerHTML = '<i class="fas fa-phone-slash"></i><span>End Chat</span>';
+            break;
+    }
+}
+
+function handleVapiError(errorMessage) {
+    updateVoiceStatus('Voice assistant unavailable: ' + errorMessage);
+    updateCustomButton('idle');
+    deactivateVoiceWaves();
+    
+    const button = document.getElementById('voice-assistant-btn');
+    if (button) {
+        button.disabled = true;
+        button.innerHTML = '<i class="fas fa-exclamation-triangle"></i><span>Voice Unavailable</span>';
+        button.style.background = 'linear-gradient(135deg, #666, #888)';
+    }
+}
+
+// Enhanced test function to diagnose Vapi connection issues
+function testVapiConnection() {
+    console.log('🧪 Testing Vapi connection...');
+    updateDebugInfo('Testing connection...');
+    
+    // Test 1: Check if we can reach the Vapi CDN
+    console.log('🔗 Testing CDN accessibility...');
+    fetch('https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js', {
+        method: 'HEAD',
+        mode: 'no-cors'
+    })
+        .then(() => {
+            console.log('✅ Vapi CDN is accessible');
+            updateDebugInfo('CDN accessible, checking SDK...');
+            
+            // Test 2: Check if SDK is loaded
+            if (window.vapiSDK) {
+                console.log('✅ Vapi SDK is loaded');
+                updateDebugInfo('SDK loaded, testing API...');
+                
+                // Test 3: Try to create a simple instance to test API
+                testApiCredentials();
+                
+            } else {
+                console.log('❌ Vapi SDK not loaded');
+                updateDebugInfo('SDK not loaded - check network');
+                showTestResults('❌ Voice assistant SDK not loaded.\n\nThis could be due to:\n• Network connectivity issues\n• Ad blockers\n• Firewall restrictions\n\nPlease refresh the page and try again.');
+            }
+        })
+        .catch(error => {
+            console.log('❌ Network error:', error);
+            updateDebugInfo('Network error - check connection');
+            showTestResults('❌ Cannot reach voice assistant servers.\n\nPlease check:\n• Your internet connection\n• Firewall settings\n• Ad blocker configuration\n\nError: ' + error.message);
+        });
+}
+
+function testApiCredentials() {
+    console.log('🔑 Testing API credentials...');
+    
+    try {
+        // Try to create a minimal Vapi instance to test credentials
+        const testConfig = {
+            apiKey: apiKey,
+            assistant: assistant,
+            config: {
+                position: "bottom-right",
+                offset: "40px",
+                width: "60px",
+                height: "60px"
+            }
+        };
+        
+        console.log('🧪 Testing with config:', {
+            apiKey: apiKey.substring(0, 8) + '...',
+            assistant: assistant.substring(0, 8) + '...'
+        });
+        
+        // Create a test instance
+        const testInstance = window.vapiSDK.run(testConfig);
+        
+        if (testInstance) {
+            console.log('✅ Test instance created successfully');
+            updateDebugInfo('API credentials valid!');
+            
+            // Clean up test instance
+            if (testInstance.stop) {
+                testInstance.stop();
+            }
+            
+            showTestResults('✅ Voice Assistant Status:\n\n' +
+                          '🔗 CDN: Connected\n' +
+                          '📦 SDK: Loaded\n' +
+                          '🔑 API: Valid\n' +
+                          '🎤 Voice: Ready\n\n' +
+                          'The voice assistant should work. If you\'re still having issues, try refreshing the page.');
+                          
+        } else {
+            console.log('❌ Test instance creation failed');
+            updateDebugInfo('API test failed');
+            showTestResults('❌ Voice assistant test failed.\n\nThe API credentials appear to be invalid or the service is temporarily unavailable.\n\nAPI Key: ' + apiKey.substring(0, 10) + '...\nAssistant ID: ' + assistant.substring(0, 10) + '...\n\nPlease check your credentials.');
+        }
+        
+    } catch (error) {
+        console.error('❌ API test error:', error);
+        
+        let errorDetails = '';
+        if (error instanceof Response) {
+            errorDetails = `Response Error: ${error.status} ${error.statusText}`;
+            error.text().then(text => {
+                console.error('Response body:', text);
+                updateDebugInfo(`API Error: ${error.status}`);
+                showTestResults(`❌ API Response Error:\n\nStatus: ${error.status} ${error.statusText}\nDetails: ${text}\n\nThis usually indicates:\n• Invalid API credentials\n• Assistant ID not found\n• Service temporarily unavailable`);
+            }).catch(() => {
+                alert(`🔍 Diagnostic Results:\n\n${Object.entries(results).map(([k,v]) => `${k}: ${v}`).join('\n')}\n\nResponse Error: ${error.status} ${error.statusText}`);
+            });
+        } else {
+            errorDetails = error.message || error.toString();
+            updateDebugInfo('API test error: ' + errorDetails);
+            showTestResults('❌ Voice assistant test failed.\n\nError: ' + errorDetails + '\n\nThis could indicate:\n• Invalid API credentials\n• Network connectivity issues\n• Service temporarily unavailable');
+        }
+    }
+}
+
+function showTestResults(message) {
+    // Show results in both alert and console
+    alert(message);
+    console.log('Test Results:', message);
+}
+
+// Fixed Voice Assistant Functions
+function setupFixedVoiceAssistant() {
+    console.log('🎛️ Setting up fixed voice assistant controls...');
+    
+    // Minimize button
+    const minimizeBtn = document.getElementById('minimize-voice-btn');
+    if (minimizeBtn) {
+        minimizeBtn.onclick = () => {
+            const card = document.getElementById('fixed-voice-assistant');
+            card.classList.toggle('minimized');
+        };
+    }
+    
+    // Close button
+    const closeBtn = document.getElementById('close-voice-btn');
+    if (closeBtn) {
+        closeBtn.onclick = () => {
+            const card = document.getElementById('fixed-voice-assistant');
+            card.classList.add('hidden');
+        };
+    }
+    
+    // Start voice button
+    const startVoiceBtn = document.getElementById('start-voice-btn');
+    if (startVoiceBtn) {
+        startVoiceBtn.onclick = () => {
+            startVoiceConversation();
+        };
+    }
+    
+    console.log('✅ Fixed voice assistant controls set up');
+}
+
+function showFixedVoiceCard() {
+    const card = document.getElementById('fixed-voice-assistant');
+    if (card) {
+        card.classList.remove('hidden', 'minimized');
+        console.log('🔍 Fixed voice assistant card shown');
+    }
+}
+
+function startVoiceConversation() {
+    console.log('🎤 Starting voice conversation...');
+    
+    const startBtn = document.getElementById('start-voice-btn');
+    const statusElement = document.getElementById('fixed-voice-status');
+    const waves = document.querySelector('.voice-waves-fixed');
+    
+    if (vapiInstance) {
+        try {
+            // Update UI
+            startBtn.classList.add('connecting');
+            startBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Connecting...</span>';
+            statusElement.textContent = 'Connecting to voice assistant...';
+            
+            // Start voice call
+            vapiInstance.start();
+            
+            // Add message to conversation
+            addConversationMessage('user', 'Starting voice conversation...');
+            
+        } catch (error) {
+            console.error('❌ Error starting voice conversation:', error);
+            startBtn.classList.remove('connecting');
+            startBtn.innerHTML = '<i class="fas fa-microphone"></i><span>Start Voice Chat</span>';
+            statusElement.textContent = 'Error starting voice chat';
+        }
+    } else {
+        alert('Voice assistant not ready. Please wait for initialization to complete.');
+    }
+}
+
+function addConversationMessage(type, message) {
+    const conversation = document.getElementById('voice-conversation');
+    if (!conversation) return;
+    
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `conversation-message ${type}-message`;
+    
+    const icon = type === 'user' ? 'fas fa-user' : 'fas fa-robot';
+    messageDiv.innerHTML = `
+        <i class="${icon}"></i>
+        <span>${message}</span>
+    `;
+    
+    conversation.appendChild(messageDiv);
+    conversation.scrollTop = conversation.scrollHeight;
+}
+
+function askVoiceQuestion(question) {
+    console.log('❓ Asking voice question:', question);
+    
+    // Add user message to conversation
+    addConversationMessage('user', question);
+    
+    // If voice is active, speak the question
+    if (vapiInstance && vapiInstance.isActive) {
+        vapiInstance.say(question);
+    } else {
+        // If voice is not active, start voice and then ask
+        startVoiceConversation();
+        setTimeout(() => {
+            if (vapiInstance && vapiInstance.say) {
+                vapiInstance.say(question);
+            }
+        }, 2000);
+    }
+}
+
+// Update existing functions to work with fixed card
+function updateFixedVoiceStatus(message) {
+    const statusElement = document.getElementById('fixed-voice-status');
+    if (statusElement) {
+        statusElement.textContent = message;
+    }
+    
+    // Also update original status
+    updateVoiceStatus(message);
+}
+
+function activateFixedVoiceWaves() {
+    const waves = document.querySelector('.voice-waves-fixed');
+    if (waves) {
+        waves.classList.add('active');
+    }
+    
+    // Also activate original waves
+    activateVoiceWaves();
+}
+
+function deactivateFixedVoiceWaves() {
+    const waves = document.querySelector('.voice-waves-fixed');
+    if (waves) {
+        waves.classList.remove('active');
+    }
+    
+    // Also deactivate original waves
+    deactivateVoiceWaves();
+}
+
+function updateFixedVoiceButton(state) {
+    const button = document.getElementById('start-voice-btn');
+    if (!button) return;
+    
+    // Remove all state classes
+    button.classList.remove('active', 'connecting');
+    
+    switch(state) {
+        case 'idle':
+            button.innerHTML = '<i class="fas fa-microphone"></i><span>Start Voice Chat</span>';
+            break;
+        case 'connecting':
+            button.classList.add('connecting');
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Connecting...</span>';
+            break;
+        case 'active':
+            button.classList.add('active');
+            button.innerHTML = '<i class="fas fa-phone-slash"></i><span>End Chat</span>';
+            break;
+    }
+}
+
+// Diagnostic function for Response errors
+function debugVoiceError() {
+    console.log('🔍 Running comprehensive voice assistant diagnostics...');
+    
+    const results = {
+        cdn: '❌ Not tested',
+        sdk: '❌ Not loaded',
+        apiKey: '❌ Not valid',
+        assistant: '❌ Not valid',
+        instance: '❌ Not created'
+    };
+    
+    // Test 1: CDN accessibility
+    fetch('https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js', {
+        method: 'HEAD',
+        mode: 'no-cors'
+    })
+    .then(() => {
+        results.cdn = '✅ Accessible';
+        console.log('✅ CDN accessible');
+        
+        // Test 2: SDK loaded
+        if (window.vapiSDK) {
+            results.sdk = '✅ Loaded';
+            console.log('✅ SDK loaded');
+            
+            // Test 3: Try minimal config
+            try {
+                const testConfig = {
+                    apiKey: apiKey,
+                    assistant: assistant
+                };
+                
+                console.log('🧪 Testing minimal config...');
+                const testInstance = window.vapiSDK.run(testConfig);
+                
+                if (testInstance) {
+                    results.instance = '✅ Created';
+                    results.apiKey = '✅ Valid';
+                    results.assistant = '✅ Valid';
+                    console.log('✅ Test instance created successfully');
+                    
+                    // Cleanup
+                    if (testInstance.stop) testInstance.stop();
+                } else {
+                    console.log('❌ Test instance creation returned null');
+                }
+                
+            } catch (error) {
+                console.error('❌ Test instance error:', error);
+                
+                if (error instanceof Response) {
+                    console.error('Response error detected:', error.status, error.statusText);
+                    error.text().then(text => {
+                        console.error('Response body:', text);
+                        alert(`🔍 Diagnostic Results:\n\n${Object.entries(results).map(([k,v]) => `${k}: ${v}`).join('\n')}\n\nResponse Error: ${error.status} ${error.statusText}\nBody: ${text}`);
+                    }).catch(() => {
+                        alert(`🔍 Diagnostic Results:\n\n${Object.entries(results).map(([k,v]) => `${k}: ${v}`).join('\n')}\n\nResponse Error: ${error.status} ${error.statusText}`);
+                    });
+                } else {
+                    alert(`🔍 Diagnostic Results:\n\n${Object.entries(results).map(([k,v]) => `${k}: ${v}`).join('\n')}\n\nError: ${error.message || error}`);
+                }
+            }
+        } else {
+            console.log('❌ SDK not loaded');
+            alert(`🔍 Diagnostic Results:\n\n${Object.entries(results).map(([k,v]) => `${k}: ${v}`).join('\n')}`);
+        }
+    })
+    .catch(error => {
+        console.error('❌ CDN error:', error);
+        alert(`🔍 Diagnostic Results:\n\n${Object.entries(results).map(([k,v]) => `${k}: ${v}`).join('\n')}\n\nCDN Error: ${error.message}`);
+    });
+}
+
+// Add debug button to test button
+setTimeout(() => {
+    const testBtn = document.getElementById('test-vapi-btn');
+    if (testBtn) {
+        testBtn.onclick = debugVoiceError;
+        testBtn.title = 'Run comprehensive diagnostics';
+    }
+}, 1000);
+
+function addSaveButton(result) {
+    // Check if save button already exists
+    if (document.getElementById('save-analysis-btn')) return;
+    
+    // Create save button
+    const saveButton = document.createElement('div');
+    saveButton.className = 'text-center mt-8 mb-8';
+    saveButton.innerHTML = `
+        <button id="save-analysis-btn" class="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-colors shadow-lg">
+            <i class="fas fa-save mr-3"></i>Save Analysis to Projects
+        </button>
+        <p class="text-gray-400 mt-2 text-sm">Save this analysis to view it later in your projects</p>
+    `;
+    
+    // Insert before voice assistant section
+    const voiceSection = document.querySelector('.voice-assistant-card');
+    if (voiceSection) {
+        voiceSection.parentNode.insertBefore(saveButton, voiceSection);
+    } else {
+        // Fallback: add to end of results
+        document.getElementById('analysis-results').appendChild(saveButton);
+    }
+    
+    // Add click handler
+    document.getElementById('save-analysis-btn').addEventListener('click', () => saveAnalysis(result));
+}
+
+function saveAnalysis(result) {
+    const saveBtn = document.getElementById('save-analysis-btn');
+    const originalText = saveBtn.innerHTML;
+    
+    // Show loading state
+    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-3"></i>Saving...';
+    saveBtn.disabled = true;
+    
+    // Get project data from form
+    const projectData = {
+        title: document.getElementById('title').value || 'Untitled Analysis',
+        description: document.getElementById('description').value || 'Analysis generated from AI Product Manager',
+        requirements: document.getElementById('requirements').value || '',
+        constraints: document.getElementById('constraints').value || '',
+        timeline: document.getElementById('timeline').value || '',
+        budget: document.getElementById('budget').value || '',
+        analysis: result.analysis,
+        conversation_log: result.conversation_log
+    };
+    
+    // Save to backend
+    fetch('/projects/save_analysis', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(projectData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Show success state
+            saveBtn.innerHTML = '<i class="fas fa-check mr-3"></i>Saved Successfully!';
+            saveBtn.className = 'bg-green-500 text-white px-8 py-4 rounded-lg font-semibold text-lg shadow-lg cursor-default';
+            
+            // Show redirect option
+            setTimeout(() => {
+                if (confirm('Analysis saved successfully! Would you like to view it in your projects?')) {
+                    window.location.href = data.redirect_url;
+                }
+            }, 1000);
+        } else {
+            throw new Error(data.error || 'Failed to save analysis');
+        }
+    })
+    .catch(error => {
+        console.error('Save error:', error);
+        alert('Failed to save analysis: ' + error.message);
+        
+        // Reset button
+        saveBtn.innerHTML = originalText;
+        saveBtn.disabled = false;
+        saveBtn.className = 'bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-colors shadow-lg';
+    });
+}
+
+/* ===========================================
+   VoiceAgent Class - updated implementation
+   provided by user (handles mic permissions,
+   keep-alive, error recovery, enriched events)
+==============================================*/
+
+class VoiceAgent {
+    constructor(apiKey, assistantId, containerId = 'voice-agent-container') {
+        this.vapiInstance = null;
+        this.apiKey = apiKey;
+        this.assistant = assistantId;
+        this.containerId = containerId;
+        this.isActive = false;
+        this.isListening = false;
+        this.isSpeaking = false;
+        this.sdkLoaded = false;
+        this.callbacks = {};
+        this.loadVapiSDK();
+    }
+    // Load Vapi SDK dynamically
+    loadVapiSDK() {
+        if (document.querySelector('script[src*="vapi"]')) { this.initializeVapi(); return; }
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js';
+        script.defer = true; script.async = true;
+        script.onload = () => { this.sdkLoaded = true; setTimeout(() => this.initializeVapi(), 500); };
+        script.onerror = () => { this.emit('error', 'Failed to load Vapi SDK'); };
+        document.head.appendChild(script);
+    }
+    initializeVapi() {
+        try {
+            if (!window.vapiSDK) throw new Error('Vapi SDK not available');
+            this.vapiInstance = window.vapiSDK.run({ apiKey: this.apiKey, assistant: this.assistant, config: {} });
+            this.bindVapiEvents();
+            this.emit('ready');
+        } catch (e) { this.emit('error', e.message); }
+    }
+    bindVapiEvents() {
+        if (!this.vapiInstance) return;
+        this.vapiInstance.on('call-start', () => { this.isActive = true; this.emit('call-start'); });
+        this.vapiInstance.on('call-end',   () => { this.isActive = false; this.isListening=false; this.isSpeaking=false; this.emit('call-end'); });
+        this.vapiInstance.on('speech-start', () => { this.isListening = true; this.emit('speech-start'); });
+        this.vapiInstance.on('speech-end',   () => { this.isListening = false; this.emit('speech-end'); });
+        this.vapiInstance.on('conversation-update', u => this.emit('conversation-update', u));
+        this.vapiInstance.on('mic-start', () => this.emit('mic-start'));
+        this.vapiInstance.on('mic-end',   () => this.emit('mic-end'));
+        this.vapiInstance.on('message', msg => {
+            if (msg.type === 'transcript') {
+                this.emit('transcript', { role: msg.role, text: msg.transcript, timestamp: Date.now() });
+                if (msg.role === 'assistant') {
+                    this.isSpeaking = true; this.emit('assistant-speaking', msg.transcript);
+                    const dur = Math.max(2000, (msg.transcript.split(' ').length / 2.5)*1000);
+                    setTimeout(() => { if(this.isActive){ this.isSpeaking=false; this.emit('assistant-finished'); this.emit('ready-for-input');}}, dur);
+                }
+                if (msg.role === 'user') this.emit('user-input-received', msg.transcript);
+            } else if (msg.type==='function-call') { this.emit('function-call', msg.functionCall); }
+            else if (msg.type==='conversation-update') { this.emit('conversation-update', msg); }
+            else { this.emit('message', msg); }
+        });
+        this.vapiInstance.on('error', err => { this.emit('error', err.message||err); if(this.isActive && err.message?.includes('microphone')) this.emit('mic-error-recovery'); });
+        this.vapiInstance.on('connection-status', s => this.emit('connection-status', s));
+    }
+    async start(){
+        try{
+            if(!this.vapiInstance) throw new Error('Voice agent not initialized.');
+            if(navigator.mediaDevices?.getUserMedia){try{const s=await navigator.mediaDevices.getUserMedia({audio:true}); s.getTracks().forEach(t=>t.stop());}catch(e){this.emit('error','Microphone access required'); return false;}}
+            await this.vapiInstance.start();
+            this.setupKeepAlive();
+            return true;
+        }catch(e){this.emit('error',e.message); return false;}
+    }
+    setupKeepAlive(){ if(this.keepAliveInterval) clearInterval(this.keepAliveInterval); this.keepAliveInterval=setInterval(()=>{ if(this.isActive) this.emit('keep-alive'); else clearInterval(this.keepAliveInterval);},30000); }
+    stop(){ try{ if(this.keepAliveInterval) clearInterval(this.keepAliveInterval); if(this.vapiInstance?.stop) this.vapiInstance.stop(); this.isActive=false; this.isListening=false; this.isSpeaking=false; return true;}catch(e){ this.emit('error',e.message); return false;}}
+    async restart(){ this.stop(); await new Promise(r=>setTimeout(r,1000)); return await this.start(); }
+    isResponsive(){ return !this.lastStateChange || (Date.now()-this.lastStateChange)<60000; }
+    sendMessage(m){ try{ if(!this.vapiInstance||!this.isActive) throw new Error('No active conversation'); this.vapiInstance.send({type:'add-message',message:{role:'user',content:m}}); return true;}catch(e){ this.emit('error',e.message); return false;}}
+    on(e,cb){ (this.callbacks[e]=this.callbacks[e]||[]).push(cb); }
+    off(e,cb){ const arr=this.callbacks[e]||[]; const i=arr.indexOf(cb); if(i>-1) arr.splice(i,1); }
+    emit(e,d){ (this.callbacks[e]||[]).forEach(cb=>{ try{cb(d);}catch(err){console.error('Callback error',err);} }); }
+    getState(){ return {isActive:this.isActive,isListening:this.isListening,isSpeaking:this.isSpeaking,sdkLoaded:this.sdkLoaded}; }
+    destroy(){ this.stop(); this.callbacks={}; this.vapiInstance=null; }
+}
+
+// ----- Integration helpers (initializeVoiceAgent, UI, etc.) -----
+function initializeVoiceAgent(){
+    const apiKey="68559a03-2b4e-43ec-9874-5b7e105b10eb";
+    const assistantId="fe4ed9f3-9015-4217-a87f-664c85993d5b";
+    const va=new VoiceAgent(apiKey,assistantId);
+    let active=false;
+    va.on('ready',()=>updateStatus('Ready to chat – click start'));
+    va.on('call-start',()=>{ active=true; updateStatus('Connected!'); updateUI('active'); });
+    va.on('call-end',()=>{ active=false; updateStatus('Conversation ended'); updateUI('inactive'); });
+    va.on('speech-start',()=>{ updateStatus('Listening...'); updateUI('listening'); });
+    va.on('speech-end',()=>{ updateStatus('Processing...'); updateUI('processing'); });
+    va.on('user-input-received',t=>updateStatus('Generating response...'));
+    va.on('assistant-speaking',()=>{ updateStatus('AI speaking'); updateUI('speaking'); });
+    va.on('assistant-finished',()=>{ if(active){ updateStatus('Listening'); updateUI('ready-for-input'); }});
+    va.on('transcript',d=>addMessage(d.role,d.text));
+    va.on('error',e=>{ updateStatus('Error: '+e); updateUI('error'); });
+    setInterval(()=>{ if(active&&!va.isResponsive()){ console.warn('restarting unresponsive voice'); va.restart(); }},60000);
+    return va;
+}
+
+// Global UI helper functions (available to VoiceAgent callbacks)
+
+function updateStatus(message) {
+    const statusElement = document.getElementById('status');
+    if (statusElement) statusElement.textContent = message;
+    console.log('[VoiceAgent] Status:', message);
+}
+
+function updateUI(state) {
+    const voiceButton = document.getElementById('voice-button');
+    const statusIndicator = document.getElementById('status-indicator');
+    const classes = ['active','listening','speaking','processing','error','ready-for-input','listening-ready','inactive'];
+    if (voiceButton) {
+        classes.forEach(c=>voiceButton.classList.remove(c));
+        if (state) voiceButton.classList.add(state);
+    }
+    if (statusIndicator) {
+        classes.forEach(c=>statusIndicator.classList.remove(c));
+        if (state) statusIndicator.classList.add(state);
+    }
+}
+
+function addMessage(role,text){
+    const messagesContainer=document.getElementById('messages');
+    if(!messagesContainer) return;
+    const div=document.createElement('div');
+    div.className=`message ${role}`;
+    div.innerHTML=`<strong>${role==='user'?'You':'AI'}:</strong> ${text}`;
+    messagesContainer.appendChild(div);
+    messagesContainer.scrollTop=messagesContainer.scrollHeight;
+}
+
+function setupSimpleVoiceAgent(){
+    let agent=null;
+    document.addEventListener('DOMContentLoaded',()=>{
+        agent=initializeVoiceAgent();
+        const start=document.getElementById('start-btn');
+        const stop=document.getElementById('stop-btn');
+        start?.addEventListener('click',async()=>{ if(await agent.start()){ start.style.display='none'; stop.style.display='block'; }});
+        stop?.addEventListener('click',()=>{ agent.stop(); stop.style.display='none'; start.style.display='block'; });
+    });
+    return {start:()=>agent?.start(), stop:()=>agent?.stop(), sendMessage:m=>agent?.sendMessage(m), getState:()=>agent?.getState() };
+}
+
+if(typeof module!=='undefined'&&module.exports){ module.exports={VoiceAgent,initializeVoiceAgent,setupSimpleVoiceAgent}; }
+
+// Auto-init
+setupSimpleVoiceAgent();
+
+navigator.mediaDevices.getUserMedia({audio:true})
+  .then(stream => {
+     const track = stream.getAudioTracks()[0];
+     console.log('mic label:', track.label);
+     setTimeout(() => track.stop(), 1000);   // close test
+  })
+  .catch(err => console.error('getUserMedia failed:', err));
+</script>
+{% endblock %} 
