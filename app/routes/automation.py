@@ -4,16 +4,25 @@ import google.generativeai as genai
 import json
 import uuid
 import json
+import os
 
 bp = Blueprint('automation', __name__, url_prefix='/automation')
 
-# Initialize Gemini
-genai.configure(api_key="AIzaSyCPDzArIXcwNwlQcmwsz8BOBaTKLNgS3lg")
-model = genai.GenerativeModel("gemini-1.5-flash")
+# Initialize Gemini from environment
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY") or os.getenv("OPENAI_API_KEY")
+model = None
+if GEMINI_API_KEY:
+    try:
+        genai.configure(api_key=GEMINI_API_KEY)
+        model = genai.GenerativeModel("gemini-1.5-flash")
+    except Exception as e:
+        print(f"Failed to initialize Gemini model: {e}")
 
 def analyze_workflow_simple(pm_workflow: str, project_title: str):
     """Simple workflow analysis using Gemini."""
     try:
+        if model is None:
+            return get_default_automations()
         prompt = f"""
         Analyze this Product Manager workflow for "{project_title}" and identify 3-5 tasks that can be automated with n8n:
 
@@ -57,6 +66,8 @@ def analyze_workflow_simple(pm_workflow: str, project_title: str):
 def get_automation_suggestions_simple(project_data):
     """Get automation suggestions for a project."""
     try:
+        if model is None:
+            return get_default_automations()
         prompt = f"""
         Suggest 5 automation workflows for this project:
         
