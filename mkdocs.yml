@@ -1,0 +1,20 @@
+site_name: AI Product Manager
+site_description: Multi-agent product planning and analysis app
+site_url: https://<your-username>.github.io/<your-repo>/
+repo_url: https://github.com/<your-username>/<your-repo>
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - Deployment: deployment.md
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.instant
+    - content.code.copy
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+  - tables
+  - codehilite
